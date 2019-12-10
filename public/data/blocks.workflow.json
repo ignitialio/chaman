@@ -1,0 +1,392 @@
+[
+  {
+    "name": "mongodb-sink",
+    "title": "MongoDB",
+    "family": "Sinks",
+    "description": "MongoDB data source",
+    "icon": "assets/icons/mongo-icon.png",
+    "options": {
+      "collection": {
+        "type": "string",
+        "title": "Collection name",
+        "_meta": {
+          "picker": {
+            "name": "ig-mongocollection-picker"
+          }
+        }
+      },
+      "query": {
+        "title": "Mongo query",
+        "type": "string",
+        "_meta": {
+          "editor": "javascript"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [{
+      "name": "data",
+      "type": "array"
+    }]
+  }, {
+    "name": "http-sink",
+    "title": "HTTP sink",
+    "family": "Sinks",
+    "description": "HTTP data source",
+    "icon": "assets/icons/http-icon.png",
+    "options": {
+      "url": {
+        "type": "string",
+        "title": "Endpoint URL"
+      },
+      "method": {
+        "title": "HTTP method",
+        "type": "string",
+        "enum": [
+          "GET"
+        ],
+        "_meta": {
+          "type": "enum"
+        }
+      },
+      "headers": {
+        "title": "HTTP request headers",
+        "type": "array",
+        "items": {
+          "title": "Header",
+          "type": "object",
+          "properties": {
+            "key": {
+              "type": "string",
+              "title": "Header key",
+              "_meta": {
+                "type": null
+              }
+            },
+            "value": {
+              "type": "string",
+              "title": "Header value",
+              "_meta": {
+                "type": null
+              }
+            }
+          },
+          "_meta": {
+            "type": null
+          }
+        },
+        "_meta": {
+          "type": null
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [{
+      "name": "data",
+      "type": "object"
+    }]
+  },
+  {
+    "name": "user-function",
+    "title": "JS function",
+    "family": "Processings",
+    "description": "Front-end JS user defind function",
+    "icon": "assets/icons/fct-icon.png",
+    "additionalInputsAuthorized": true,
+    "additionalOutputsAuthorized": true,
+    "options": {
+      "fct": {
+        "title": "Defined function",
+        "type": "string",
+        "_meta": {
+          "editor": "javascript"
+        }
+      }
+    },
+    "inputs": [{
+      "name": "x",
+      "type": "any"
+    }],
+    "outputs": [{
+      "name": "y",
+      "type": "any"
+    }]
+  },
+  {
+    "name": "service-function",
+    "title": "Serverless function",
+    "family": "Processings",
+    "description": "Serverless service function",
+    "icon": "assets/icons/svc-fct-icon.png",
+    "additionalInputsAuthorized": true,
+    "additionalOutputsAuthorized": true,
+    "options": {
+      "service": {
+        "title": "Service name",
+        "type": "string",
+        "_meta": {
+          "type": null,
+          "picker": {
+            "name": "ig-services-picker"
+          }
+        }
+      },
+      "method": {
+        "title": "Method name",
+        "type": "string",
+        "_meta": {
+          "type": null,
+          "picker": {
+            "name": "ig-services-picker",
+            "type": "methods"
+          }
+        }
+      }
+    },
+    "inputs": [{
+      "name": "x",
+      "type": "any"
+    }],
+    "outputs": [{
+      "name": "y",
+      "type": "any"
+    }]
+  },
+  {
+    "name": "chart-widget",
+    "title": "Chart",
+    "family": "Widgets",
+    "description": "Chart for data display",
+    "icon": "assets/icons/chart-icon.png",
+    "options": {
+      "realtime": {
+        "title": "Realtime update",
+        "type": "boolean",
+        "_meta": {
+          "type": null
+        }
+      },
+      "eventDriven": {
+        "title": "Event driven",
+        "type": "boolean",
+        "_meta": {
+          "type": null
+        }
+      },
+      "updateInterval": {
+        "title": "Update interval",
+        "type": "integer",
+        "_meta": {
+          "type": null,
+          "units": "milliseconds"
+        }
+      },
+      "timeWindow": {
+        "title": "Time window",
+        "type": "integer",
+        "_meta": {
+          "type": null,
+          "units": "milliseconds"
+        }
+      },
+      "chartType": {
+        "title": "Chart type",
+        "type": "string",
+        "enum": [
+          "mixed", "bar", "column", "line", "pie", "donut"
+        ],
+        "_meta": {
+          "type": "enum"
+        }
+      },
+      "series": {
+        "title": "Data series",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Name",
+              "type": "string",
+              "_meta": {
+                "type": null
+              }
+            },
+            "color": {
+              "title": "Color",
+              "type": "string",
+              "_meta": {
+                "type": null,
+                "picker": {
+                  "name": "ig-colorpicker"
+                }
+              }
+            },
+            "axis": {
+              "title": "Axis",
+              "type": "string",
+              "enum": [
+                "X", "Y"
+              ],
+              "_meta": {
+                "type": "enum"
+              }
+            },
+            "path": {
+              "title": "Data path",
+              "type": "string",
+              "_meta": {
+                "type": null,
+                "picker": {
+                  "name": "ig-jsonpicker"
+                }
+              }
+            },
+            "categories": {
+              "title": "Categories",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "_meta": {
+                  "type": null,
+                  "condition": "{{$.chartType}} === 'pie' || {{$.chartType}} === 'donut'"
+                }
+              }
+            }
+          },
+          "_meta": {
+            "type": null
+          }
+        }
+      }
+    },
+    "inputs": [{
+      "name": "data",
+      "type": "any"
+    }],
+    "outputs": []
+  },
+  {
+    "name": "map-widget",
+    "title": "Map",
+    "family": "Widgets",
+    "description": "Map for data display",
+    "icon": "assets/icons/map-icon.png",
+    "options": {
+      "realtime": {
+        "title": "Realtime update",
+        "type": "boolean",
+        "_meta": {
+          "type": null
+        }
+      },
+      "eventDriven": {
+        "title": "Event driven",
+        "type": "boolean",
+        "_meta": {
+          "type": null
+        }
+      },
+      "updateInterval": {
+        "title": "Update interval",
+        "type": "integer",
+        "_meta": {
+          "type": null,
+          "units": "milliseconds"
+        }
+      },
+      "timeWindow": {
+        "title": "Time window",
+        "type": "integer",
+        "_meta": {
+          "type": null,
+          "units": "milliseconds"
+        }
+      },
+      "chartType": {
+        "title": "Chart type",
+        "type": "string",
+        "enum": [
+          "mixed", "bar", "column", "line", "pie", "donut"
+        ],
+        "_meta": {
+          "type": "enum"
+        }
+      },
+      "layers": {
+        "title": "Data layers",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Name",
+              "type": "string",
+              "_meta": {
+                "type": null
+              }
+            },
+            "markerIcon": {
+              "title": "Marker icon",
+              "type": "string",
+              "default": "assets/markers/marker.png",
+              "_meta": {
+                "type": "image",
+                "imageType": "image/*",
+                "maxSize": 100000
+              }
+            },
+            "color": {
+              "title": "Color",
+              "type": "string",
+              "_meta": {
+                "type": null,
+                "picker": {
+                  "name": "ig-colorpicker"
+                }
+              }
+            },
+            "type": {
+              "title": "Display type",
+              "type": "string",
+              "enum": [
+                "shapes", "markers"
+              ],
+              "_meta": {
+                "type": "enum"
+              }
+            },
+            "format": {
+              "title": "Data format",
+              "type": "string",
+              "enum": [
+                "single", "multiple"
+              ],
+              "_meta": {
+                "type": "enum"
+              }
+            },
+            "path": {
+              "title": "Data path",
+              "type": "string",
+              "_meta": {
+                "type": null,
+                "picker": {
+                  "name": "ig-jsonpicker"
+                }
+              }
+            }
+          },
+          "_meta": {
+            "type": null
+          }
+        }
+      }
+    },
+    "inputs": [{
+      "name": "data",
+      "type": "any"
+    }],
+    "outputs": []
+  }
+]

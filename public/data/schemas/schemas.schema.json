@@ -1,0 +1,34 @@
+{
+  "title": "Schema",
+  "name": "schemas",
+  "description": "Schemas collection",
+  "type": "object",
+  "_meta": {
+    "list": {
+      "title": "$.name",
+      "subtitle": "$.title"
+    }
+  },
+  "properties": {
+    "content": {
+      "title": "content",
+      "type": "objectid",
+      "_meta": {
+        "type": "code",
+        "language": "json"
+      }
+    },
+    "_lastModified": {
+      "title": "Last modification",
+      "type": "string",
+      "readOnly": true,
+      "_meta": {
+        "type": null,
+        "i18n": {
+          "Last modification": [ "Dernière modification", "Última modificación" ]
+        }
+      }
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
