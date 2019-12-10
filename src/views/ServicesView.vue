@@ -43,22 +43,30 @@ export default {
     }
   },
   methods: {
-    onServiceUp(service) {
+    async update() {
       this.services = sortBy(values(this.$services.servicesDico), [ 'name' ])
 
-      if (service.options && service.options.description) {
-        this.getImage(service, service.name, service.options.description.icon)
-          .then(() => {
-            // console.log(service.name, service.options.description.icon, service._iconUrl)
-            this.$forceUpdate()
-          })
-          .catch(err => console.log(err))
-      } else {
-        console.log('service [%s] up: no description', service.name)
+      for (let i = 0; i < this.services.length; i++) {
+        try {
+          let service = await this.$services.waitForService(this.services[i].name)
+          if (this.services[i].options && this.services[i].options.description) {
+            await this.getImage(this.services[i], this.services[i].name,
+              this.services[i].options.description.icon)
+          }
+
+          this.services[i].isLocal = await service.isLocal()
+        } catch (err) {
+          console.log(err)
+        }
       }
+
+      this.$forceUpdate()
+    },
+    onServiceUp(service) {
+      this.update()
     },
     onServiceDown(service) {
-      this.services = sortBy(values(this.$services.servicesDico), [ 'name' ])
+      this.update()
       if (this.selected && service === this.selected.name) {
         this.selected = null
       }
@@ -101,11 +109,11 @@ export default {
       onServiceUp: this.onServiceUp.bind(this),
       onServiceDown: this.onServiceDown.bind(this)
     }
-    
+
     this.$services.on('service:up', this._listeners.onServiceUp)
     this.$services.on('service:down', this._listeners.onServiceDown)
 
-    this.services = sortBy(values(this.$services.servicesDico), [ 'name' ])
+    this.update()
 
     this.$services.waitForService('iiost').then(iiost => {
       iiost.oneGetServiceMethod({ toto: 'titi' }).then(result => {

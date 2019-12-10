@@ -115,7 +115,7 @@
         <v-divider></v-divider>
         <v-subheader>{{ $t('Version') }}</v-subheader>
 
-        <v-list-item v-if="packageInfo" @click="navTo('/admin')">
+        <v-list-item v-if="packageInfo" @click="$router.push('/status')">
           <v-list-item-action>
             <img style="width: 24px; height: 24px;"
               src="assets/chaman-32.png" alt=""/>
@@ -198,6 +198,7 @@ import LoginView from '../views/LoginView.vue'
 import MainView from '../views/MainView.vue'
 import ServicesView from '../views/ServicesView.vue'
 import AccessControlView from '../views/AccessControlView.vue'
+import SupervisionView from '../views/SupervisionView.vue'
 import ListView from '../views/ListView.vue'
 import ItemView from '../views/ItemView.vue'
 
@@ -468,6 +469,19 @@ export default {
           query: {
             collection: 'schemas'
           }
+        }
+      },
+      {
+        index: 13,
+        title: 'Status',
+        icon: 'airplay',
+        anonymousAccess: false,
+        section: 'Utilities',
+        hidden: true, /* do not show it in the menu */
+        route: {
+          name: 'Status',
+          path: '/status',
+          component: SupervisionView
         }
       },
       {
