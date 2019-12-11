@@ -1,31 +1,40 @@
 <template>
   <div class="supervision-layout">
-    <div class="supervision-section">{{ $t('Services') }}</div>
-    <div class="supervision-services">
-      <div class="supervision-service elevation-1"
-        v-for="service in services" :key="service.name"
-        @click="handleServiceSelect(service)">
-        <div class="supervision-service--name"
-          :class="{ 'local': service.isLocal }">
-          <div>{{service.name}}</div>
-          <img v-if="service._iconUrl" :src="service._iconUrl"
-            class="supervision-service--icon"/>
+    <div class="supervision-half">
+      <div class="supervision-section">{{ $t('Services') }}</div>
+      <div class="supervision-services">
+        <div class="supervision-service elevation-1"
+          v-for="service in services" :key="service.name"
+          @click="handleServiceSelect(service)">
+          <div class="supervision-service--name"
+            :class="{ 'local': service.isLocal }">
+            <div>{{service.name}}
+              <span v-if="service.hostname"
+                class="supervision-service--name--sub">
+                {{$t('host') + ' ' + service.hostname}}</span>
+              <span v-if="service.version"
+                class="supervision-service--name--sub">
+                {{$t('version') + ' ' + service.version}}</span>
+            </div>
+            <img v-if="service._iconUrl" :src="service._iconUrl"
+              class="supervision-service--icon"/>
+          </div>
+          <div class="supervision-service--methods">
+            <div class="supervision-service--method"
+              v-for="m in service.methods">{{m}}</div>
+          </div>
         </div>
-        <div v-if="service.hostname">
-          <span style="color: slategrey;">hostname:</span>
-          {{service.hostname}}</div>
-        <div v-if="service.version">
-          <span style="color: slategrey;">version:</span>
-          {{service.version}}</div>
       </div>
     </div>
 
-    <div class="supervision-section">{{ $t('Modules') }}</div>
-    <div class="supervision-services">
-      <div class="supervision-module elevation-1"
-        v-for="module in modules" :key="module.name"
-        @click="handleModuleSelect(module)">
-        <div>{{module.name}}</div>
+    <div class="supervision-half">
+      <div class="supervision-section">{{ $t('Modules') }}</div>
+      <div class="supervision-services">
+        <div class="supervision-module elevation-1"
+          v-for="module in modules" :key="module.name"
+          @click="handleModuleSelect(module)">
+          <div>{{module.name}}</div>
+        </div>
       </div>
     </div>
   </div>
@@ -35,6 +44,7 @@
 import sortBy from 'lodash/sortBy'
 import map from 'lodash/map'
 import values from 'lodash/values'
+import filter from 'lodash/filter'
 
 export default {
   data() {
@@ -51,6 +61,19 @@ export default {
     async update() {
       this.services = sortBy(values(this.$services.servicesDico), [ 'name' ])
 
+      let subServices = {}
+      this.services.forEach(e => {
+        if (e.name.match(/:/)) {
+          let svc = e.name.split(':')[0]
+          let ssvc = e.name.split(':')[10]
+
+          subServices[svc] = subServices[svc] || []
+          subServices[svc].push(ssvc)
+        }
+      })
+
+      this.services = filter(this.services, e => !e.name.match(/:/))
+
       for (let i = 0; i < this.services.length; i++) {
         try {
           let service = await this.$services.waitForService(this.services[i].name)
@@ -60,6 +83,7 @@ export default {
           }
 
           this.services[i].isLocal = await service.isLocal()
+          this.services[i].sub = subServices[this.services[i].name]
         } catch (err) {
           console.log(err)
         }
@@ -79,8 +103,6 @@ export default {
           if (type) {
             itemToUpdate._iconUrl = 'data:image/' + type + ';base64, ' +
               btoa(String.fromCharCode.apply(null, typedArray))
-
-            console.log(itemToUpdate._iconUrl)
             resolve()
           }
         } catch (err) {
@@ -104,6 +126,7 @@ export default {
       console.log($j(module))
     },
     handleHeartBeat(message) {
+      console.log(message)
       for (let i = 0; i < this.services.length; i++) {
         if (this.services[i].name === message.meta.service) {
           this.services[i].hostname = message.data.hostname
@@ -139,21 +162,27 @@ export default {
 .supervision-layout {
   width: 100%;
   height: calc(100% - 0px);
+  display: flex;
+}
+
+.supervision-half {
+  width: 50%;
+  height: calc(100% - 0px);
 }
 
 .supervision-services {
-  margin: 8px 8px 24px 8px;
-  width: calc(100% - 16px);
-  height: 212px;
+  width: calc(100% - 0px);
+  height: calc(100% - 48px);
   display: flex;
-  flex-wrap: wrap;
+  flex-flow: column;
   overflow-y: auto;
   border-radius: 2px;
+  align-items: center;
 }
 
 .supervision-service {
-  width: 200px;
-  height: 96px;
+  width: calc(100% - 8px);
+  min-height: 96px;
   display: flex;
   flex-flow: column;
   margin: 4px;
@@ -170,6 +199,11 @@ export default {
   justify-content: space-between;
 }
 
+.supervision-service--name--sub {
+  color: gainsboro;
+  margin: 0 8px;
+}
+
 .supervision-service--name.local {
   background-color: olive;
 }
@@ -179,21 +213,49 @@ export default {
   height: 24px;
 }
 
-.supervision-section {
+.supervision-service--methods {
   width: 100%;
+  height: 90px;
+  max-height: 90px;
+  overflow-y: auto;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.supervision-service--method {
+  border: 1px solid gainsboro;
+  height: 1.5em;
+  padding: 2px;
+  margin: 2px;
+}
+
+.supervision-section {
+  width: calc(100% - 8px);
   text-align: center;
   font-weight: bold;
-  border-bottom: 1px solid deepskyblue;
+  border-bottom: 1px solid dimgray;
   margin: 8px 4px;
 }
 
 .supervision-module {
-  width: 200px;
+  width: calc(100% - 8px);
   height: 40px;
   display: flex;
   align-items: center;
   margin: 4px;
   justify-content: center;
   overflow: hidden;
+}
+
+@media screen and (max-width: 600px) {
+  .supervision-layout {
+    flex-flow: column;
+    overflow-y: auto;
+  }
+
+  .supervision-half {
+    width: 100%;
+    height: auto;
+  }
 }
 </style>

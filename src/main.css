@@ -4,7 +4,6 @@ body {
   overflow: hidden;
 }
 
-
 ::-webkit-scrollbar {
   width: 0.5em;
 }
@@ -60,8 +59,14 @@ body {
   50% { opacity: 0; }
 }
 
-@media screen and (min-width: 800px) {
+@media screen and (min-width: 600px) {
   .ig-mobileonly {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  ::-webkit-scrollbar {
     display: none;
   }
 }
