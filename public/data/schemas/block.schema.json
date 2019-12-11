@@ -1,0 +1,169 @@
+{
+  "title": "Block",
+  "description": "Block",
+  "type": "object",
+  "_meta": {
+    "type": null,
+    "list": {
+      "icon": "$.icon",
+      "title": "$.title",
+      "subtitle": "$.name"
+    }
+  },
+  "properties": {
+    "name": {
+      "title": "Name",
+      "type": "string",
+      "_meta": {
+        "type": null
+      }
+    },
+    "title": {
+      "title": "Title",
+      "type": "string",
+      "_meta": {
+        "type": null
+      }
+    },
+    "type": {
+      "title": "Type",
+      "type": "string",
+      "enum": [
+        "Source",
+        "Processing",
+        "Widget"
+      ],
+      "_meta": {
+        "type": null,
+        "i18n": {
+          "Type": [ "Type", "Tipo" ],
+          "Source": [ "Source", "Fuente" ],
+          "Processing": [ "Traitement", "Tratamiento" ],
+          "Widget": [ "Visualisation", "Visualización" ]
+        }
+      }
+    },
+    "description": {
+      "title": "Description",
+      "type": "string",
+      "_meta": {
+        "type": null,
+        "i18n": {
+          "Description": [ "Description", "Descripción" ]
+        }
+      }
+    },
+    "icon": {
+      "title": "Icon",
+      "type": "string",
+      "_meta": {
+        "type": "image",
+        "imageType": "image/*",
+        "maxSize": 50000,
+        "showThumbnail": true,
+        "i18n": {
+          "Icon": [ "Icône", "Icono" ]
+        }
+      }
+    },
+    "inputs": {
+      "title": "Inputs",
+      "type": "array",
+      "items": {
+        "title": "Input",
+        "type": "object",
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string",
+            "_meta": {
+              "type": null
+            }
+          },
+          "type": {
+            "title": "Type",
+            "type": "string",
+            "enum": [
+
+            ],
+            "_meta": {
+              "type": null
+            }
+          },
+          "method": {
+            "title": "Method",
+            "type": "string",
+            "_meta": {
+              "type": null,
+              "i18n": {
+                "Method": [ "Méthod", "Método" ]
+              }
+            }
+          }
+        },
+        "_meta": {
+          "type": null,
+          "i18n": {
+            "Input": [ "Entrée", "Entrada" ]
+          }
+        }
+      },
+      "_meta": {
+        "type": null,
+        "i18n": {
+          "Inputs": [ "Entrées", "Entradas" ]
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "array",
+      "items": {
+        "title": "Output",
+        "type": "object",
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string",
+            "_meta": {
+              "type": null
+            }
+          },
+          "type": {
+            "title": "Type",
+            "type": "string",
+            "enum": [
+
+            ],
+            "_meta": {
+              "type": null
+            }
+          },
+          "method": {
+            "title": "Method",
+            "type": "string",
+            "_meta": {
+              "type": null,
+              "i18n": {
+                "Method": [ "Méthod", "Método" ]
+              }
+            }
+          }
+        },
+        "_meta": {
+          "type": null,
+          "i18n": {
+            "Output": [ "Sortie", "Salida" ]
+          }
+        }
+      },
+      "_meta": {
+        "type": null,
+        "i18n": {
+          "Outputs": [ "Sorties", "Salidas" ]
+        }
+      }
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

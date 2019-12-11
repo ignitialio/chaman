@@ -112,6 +112,41 @@ module.exports = {
           }
         }
       }
+    }, {
+      name: 'blocks',
+      options: {
+        grants: {
+          __privileged__: {
+            'dlake:blocks': {
+              'create:any': [ '*' ],
+              'read:any': [ '*' ],
+              'update:any': [ '*' ],
+              'delete:any': [ '*' ]
+            }
+          },
+          admin: {
+            'dlake:blocks': {
+              'create:any': [ '*' ],
+              'read:any': [ '*' ],
+              'update:any': [ '*' ],
+              'delete:any': [ '*' ]
+            }
+          },
+          user: {
+            'dlake:blocks': {
+              'create:any': [ '*' ],
+              'read:any': [ '*' ],
+              'update:any': [ '*' ],
+              'delete:any': [ '*' ]
+            }
+          },
+          anonymous: {
+            'dlake:blocks': {
+              'read:any': [ '*' ]
+            }
+          }
+        }
+      }
     }],
     _unified: true
   },

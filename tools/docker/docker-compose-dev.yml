@@ -32,6 +32,91 @@ services:
     networks:
       infra:
 
+  s3:
+    image: ignitial/s3:1.0.0
+    container_name: s3
+    volumes:
+      - /home/${USER}/Documents/Projects/iio/services/s3:/opt/s3
+    environment:
+      - IIOS_REDIS_HOST=redis
+      - IIOS_NAMESPACE=${IIOS_NAMESPACE}
+      - IIOS_SERVER_HOST=s3
+      - IIOS_SERVER_PORT=21200
+      - IIOS_S3_ENDPOINT=minio
+      - IIOS_S3_PORT=9000
+      - IIOS_S3_BUCKET=chaman
+      - IIOS_S3_SECURE=false
+      - IIOS_S3_ACCESS_KEY_ID=G4I3RZP3I2AS7EMWQPMZ
+      - IIOS_S3_SECRET_ACCESS_KEY=xMzrrXMtnFEOP/K7MDFRA/bPxRfiCYEXOTOTOYEK
+    networks:
+      infra:
+
+  lambda:
+    image: ignitial/lambda:1.0.0
+    container_name: lambda
+    volumes:
+      - /home/${USER}/Documents/Projects/iio/services/lambda:/opt/lambda
+    environment:
+      - IIOS_SERVER_HOST_TEST=0.0.0.0
+      - IIOS_DOCKER_REGISTRY=localhost:5001
+      - IIOS_REDIS_HOST=redis
+      - IIOS_NAMESPACE=${IIOS_NAMESPACE}
+      - IIOS_SERVER_HOST=lambda
+      - IIOS_SERVER_PORT=21201
+    networks:
+      infra:
+
+  docker:
+    image: ignitial/docker:1.0.0
+    container_name: docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/${USER}/Documents/Projects/iio/services/docker:/opt/docker
+    environment:
+      # force host docker use
+      - IIOS_DOCKER_SOCKET_PATH=/var/run/docker.sock
+      - IIOS_REDIS_HOST=redis
+      - IIOS_NAMESPACE=${IIOS_NAMESPACE}
+      - IIOS_SERVER_HOST=docker
+      - IIOS_SERVER_PORT=21202
+    networks:
+      infra:
+
+  influxdb:
+    image: influxdb:1.7-alpine
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      - INFLUXDB_DB=ignitialio
+      - INFLUXDB_ADMIN_ENABLED=true
+    networks:
+      infra:
+
+  influx:
+    image: ignitial/influx:1.0.0
+    container_name: influx
+    volumes:
+      - /home/${USER}/Documents/Projects/iio/services/influx:/opt/influx
+    environment:
+      - IIOS_REDIS_HOST=redis
+      - IIOS_NAMESPACE=${IIOS_NAMESPACE}
+      - IIOS_SERVER_HOST=influx
+      - IIOS_SERVER_PORT=21203
+    networks:
+      infra:
+
+  utils:
+    image: ignitial/utils:1.0.0
+    container_name: utils
+    volumes:
+      - /home/${USER}/Documents/Projects/iio/services/utils:/opt/utils
+    environment:
+      - IIOS_REDIS_HOST=redis
+      - IIOS_NAMESPACE=${IIOS_NAMESPACE}
+      - IIOS_SERVER_HOST=utils
+      - IIOS_SERVER_PORT=21204
+
 networks:
   infra:
     external: true

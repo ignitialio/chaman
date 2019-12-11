@@ -126,7 +126,6 @@ export default {
       console.log($j(module))
     },
     handleHeartBeat(message) {
-      console.log(message)
       for (let i = 0; i < this.services.length; i++) {
         if (this.services[i].name === message.meta.service) {
           this.services[i].hostname = message.data.hostname

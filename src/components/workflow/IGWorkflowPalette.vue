@@ -52,7 +52,7 @@ export default {
       tab: null,
       hidden: true,
       blocks: null,
-      families: [ 'Sinks', 'Processings', 'Widgets' ]
+      families: [ 'Sources', 'Processings', 'Widgets' ]
     }
   },
   watch: {

@@ -327,4 +327,7 @@ data:
   "No object selected":
     - "Pas d'objet sélectionné"
     - "No hay ningun objeto seleccionado"
+  "Blocks":
+    - "Blocs"
+    - "Bloques"
 _unified: true

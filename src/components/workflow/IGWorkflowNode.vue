@@ -3,7 +3,7 @@
     :style="'background-image: url(' +  this.$utils.fileUrl(this.node.icon) + ');'"
     class="wfnode-layout"
     :class="{
-      'sink': node.family === 'Sinks',
+      'sink': node.family === 'Sources',
       'processing': node.family === 'Processings',
       'widget': node.family === 'Widgets'
     }"
@@ -193,8 +193,8 @@ export default {
     this.$el.style.top = this.node.geometry.y + 'px'
 
     this.families = [{
-      value: 'Sinks',
-      text: this.$t('Sinks')
+      value: 'Sources',
+      text: this.$t('Sources')
     }, {
       value: 'Processings',
       text: this.$t('Processings')

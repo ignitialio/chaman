@@ -201,6 +201,7 @@ import AccessControlView from '../views/AccessControlView.vue'
 import SupervisionView from '../views/SupervisionView.vue'
 import ListView from '../views/ListView.vue'
 import ItemView from '../views/ItemView.vue'
+import BlocksView from '../views/BlocksView.vue'
 
 import ListContextBar from '../views/context/ListContextBar.vue'
 import ItemContextBar from '../views/context/ItemContextBar.vue'
@@ -418,14 +419,14 @@ export default {
       },
       {
         index: 5,
-        title: 'My items test',
-        icon: 'dialpad',
+        title: 'Blocks',
+        svgIcon: 'assets/icons/lego-brick.png',
         anonymousAccess: false,
-        section: 'Test',
+        section: 'Settings',
         route: {
-          name: 'My items',
-          path: '/myitems',
-          component: ListView,
+          name: 'Blocks',
+          path: '/blocks',
+          component: BlocksView,
           query: {
             collection: 'myitems'
           }

@@ -2,7 +2,7 @@
   {
     "name": "mongodb-sink",
     "title": "MongoDB",
-    "family": "Sinks",
+    "family": "Sources",
     "description": "MongoDB data source",
     "icon": "assets/icons/mongo-icon.png",
     "options": {
@@ -31,7 +31,7 @@
   }, {
     "name": "http-sink",
     "title": "HTTP sink",
-    "family": "Sinks",
+    "family": "Sources",
     "description": "HTTP data source",
     "icon": "assets/icons/http-icon.png",
     "options": {
