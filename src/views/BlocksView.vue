@@ -29,7 +29,7 @@
     </div>
 
     <div class="blocks-right">
-      <ig-form v-if="selected && schema" v-model="selected" :schema="schema"/>
+      <ig-form v-if="selected && schema" v-model="selected" :schema="schema" :root="selected"/>
     </div>
   </div>
 </template>
@@ -62,8 +62,8 @@ export default {
       this.selected = {
         "name": "",
         "service": "",
-        "type": "Source",
-        "description": "My workflow block",
+        "type": "",
+        "description": "",
         "icon": "assets/icons/cube.png",
         "inputs": [],
         "outputs": []

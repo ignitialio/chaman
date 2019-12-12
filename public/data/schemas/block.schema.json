@@ -87,6 +87,7 @@
         "properties": {
           "name": {
             "title": "Name",
+            "default": "anInput",
             "type": "string",
             "_meta": {
               "type": null
@@ -95,6 +96,7 @@
           "type": {
             "title": "Type",
             "type": "string",
+            "default": "Event",
             "enum": [
               "Event", "Remote call", "Stream"
             ],
@@ -110,10 +112,15 @@
           "method": {
             "title": "Method",
             "type": "string",
+            "default": "",
             "_meta": {
               "type": null,
+              "selection": {
+                "list": "getServiceMethods",
+                "param": "$.service"
+              },
               "i18n": {
-                "Method": [ "Méthod", "Método" ]
+                "Method": [ "Méthode", "Método" ]
               }
             }
           }
@@ -142,6 +149,7 @@
           "name": {
             "title": "Name",
             "type": "string",
+            "default": "anOutput",
             "_meta": {
               "type": null
             }
@@ -149,16 +157,23 @@
           "type": {
             "title": "Type",
             "type": "string",
+            "default": "Event",
             "enum": [
-
+              "Event", "Remote call", "Stream"
             ],
             "_meta": {
-              "type": null
+              "type": null,
+              "i18n": {
+                "Event": [ "Événement", "Evenimiento" ],
+                "Remote call": [ "Appel distant", "Llamada remota" ],
+                "Stream": [ "Flux", "Flujo" ]
+              }
             }
           },
           "method": {
             "title": "Method",
             "type": "string",
+            "default": "",
             "_meta": {
               "type": null,
               "i18n": {

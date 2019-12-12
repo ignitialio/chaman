@@ -82,7 +82,7 @@
 
         <!-- with external provider -->
         <div class="igform-selector"
-          v-else-if="schema._meta && schema._meta.selection">
+          v-else-if="schema._meta && schema._meta.selection && schema._meta.selection.provider">
           <v-text-field
             :type="schema._meta.type || 'text'"
             :readonly="isReadOnly"
@@ -94,6 +94,13 @@
             <v-icon>play_for_work</v-icon>
           </v-btn>
         </div>
+
+        <!-- with list provided by function -->
+        <v-select v-else-if="schema._meta && schema._meta.selection && schema._meta.selection.list"
+          :label="$t(schema.title || name)"
+          :disabled="editable"
+          :items="helper(schema._meta.selection.list, schema._meta.selection.param)"
+          :value="$t(value)" @input="handleInput"></v-select>
 
         <v-text-field v-else
           :type="schema._meta.type || 'text'"
@@ -139,7 +146,7 @@
         :schema.sync="schema.properties[prop]"
         @update:schema="handleUpdateSchema(prop, $event)"
         class="ig-form-next-form"
-        v-model="value[prop]" :editable="editable"></ig-form>
+        v-model="value[prop]" :editable="editable" :root="root"></ig-form>
     </div>
 
     <!-- next level: is Array -->
@@ -152,7 +159,8 @@
         @update:schema="handleUpdateSchema(null, $event)"
         class="ig-form-next-object"
         :value="item" :editable="editable" removable
-        @remove="handleRemove(index)"></ig-form>
+        @remove="handleRemove(index)"
+        :root="root"></ig-form>
 
       <ig-form v-if="schema.items.type === 'object'"
         v-for="(item, index) in value" :key="index"
@@ -161,7 +169,8 @@
         @update:schema="handleUpdateSchema($t('item'), $event)"
         class="ig-form-next-object"
         :value="item" :editable="editable" removable
-        @remove="handleRemove(index)"></ig-form>
+        @remove="handleRemove(index)"
+        :root="root"></ig-form>
 
       <ig-form v-if="itemSchema && Array.isArray(schema.items)"
         v-for="(itemSchema, index) in schema.items" :key="index"
@@ -170,7 +179,8 @@
         @update:schema="handleUpdateSchema($t('item'), $event)"
         class="ig-form-next-object"
         :value="value[index]" :editable="editable" removable
-        @remove="handleRemove(index)"></ig-form>
+        @remove="handleRemove(index)"
+        :root="root"></ig-form>
     </div>
 
     <v-btn icon small style="max-width: 28px; margin: 4px 0;"
@@ -214,6 +224,7 @@
 import map from 'lodash/map'
 import cloneDeep from 'lodash/cloneDeep'
 import ss from 'socket.io-stream'
+import jsonpath from 'jsonpath'
 
 export default {
   name: 'ig-form',
@@ -229,6 +240,9 @@ export default {
       type: Boolean
     },
     schema: {
+      type: Object
+    },
+    root: {
       type: Object
     }
   },
@@ -463,6 +477,11 @@ export default {
       }
 
       this.$services.once(this.schema._meta.selection.event, onSelect)
+    },
+    helper(fct, param) {
+      console.log(fct, param)
+      param = jsonpath.query(this.root, param)[0]
+      return this.$helpers[fct].apply(this,  [ param ])
     }
   },
   async beforeMount() {

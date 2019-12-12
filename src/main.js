@@ -26,6 +26,7 @@ import utilsPlugin from './plugins/utils.plugin'
 import encodersPlugin from './plugins/encoders.plugin'
 import uiPlugin from './plugins/ui.plugin'
 import dbPlugin from './plugins/db.plugin'
+import helpersPlugin from './plugins/helpers.plugin'
 
 // -----------------------------------------------------------------------------
 // Specific imports
@@ -59,6 +60,7 @@ Vue.use(configPlugin)
 Vue.use(encodersPlugin)
 Vue.use(uiPlugin)
 Vue.use(dbPlugin)
+Vue.use(helpersPlugin)
 
 // initialize components
 // ...
