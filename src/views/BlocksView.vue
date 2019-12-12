@@ -64,7 +64,7 @@ export default {
         "service": "",
         "type": "Source",
         "description": "My workflow block",
-        "icon": "",
+        "icon": "assets/icons/cube.png",
         "inputs": [],
         "outputs": []
       }
