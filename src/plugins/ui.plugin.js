@@ -13,6 +13,8 @@ import IGImageSelector from '../components/ui/IGImageSelector.vue'
 import IGButtonWithConfirm from '../components/ui/IGButtonWithConfirm.vue'
 import IGDialog from '../components/ui/IGDialog.vue'
 
+import IGServicePicker from '../components/ui/pickers/IGServicePicker.vue'
+
 import 'prismjs'
 import 'prismjs/themes/prism.css'
 import PrismEditor from 'vue-prism-editor'
@@ -33,8 +35,10 @@ export default {
       Vue.component('ig-btn-confirm', IGButtonWithConfirm)
       Vue.component('ig-colorpicker', IGColorPicker)
       Vue.component('ig-label', IGEditableLabel)
-      Vue.component('ig-img-selector', IGImageSelector)
+      Vue.component('ig-img-selector', IGServicePicker)
       Vue.component('ig-dialog', IGDialog)
+
+      Vue.component('ig-service-picker', IGServicePicker)
 
       Vue.component('prism-editor', PrismEditor)
     }

@@ -73,12 +73,11 @@ data:
               unique: true
     - name: notifications
     - name: connections
-    # example
-    - name: myitems
+    - name: blocks
       options:
         grants:
           __privileged__:
-            'dlake:myitems':
+            'dlake:blocks':
               'create:any':
                 - '*'
               'read:any':
@@ -88,7 +87,7 @@ data:
               'delete:any':
                 - '*'
           admin:
-            'dlake:myitems':
+            'dlake:blocks':
               'create:any':
                 - '*'
               'read:any':
@@ -98,7 +97,7 @@ data:
               'delete:any':
                 - '*'
           user:
-            'dlake:myitems':
+            'dlake:blocks':
               'create:any':
                 - '*'
               'read:any':
@@ -108,7 +107,44 @@ data:
               'delete:any':
                 - '*'
           anonymous:
-            'dlake:myitems':
+            'dlake:blocks':
+              'read:any':
+                - '*'
+    - name: workflows
+      options:
+        grants:
+          __privileged__:
+            'dlake:workflows':
+              'create:any':
+                - '*'
+              'read:any':
+                - '*'
+              'update:any':
+                - '*'
+              'delete:any':
+                - '*'
+          admin:
+            'dlake:workflows':
+              'create:any':
+                - '*'
+              'read:any':
+                - '*'
+              'update:any':
+                - '*'
+              'delete:any':
+                - '*'
+          user:
+            'dlake:workflows':
+              'create:any':
+                - '*'
+              'read:any':
+                - '*'
+              'update:any':
+                - '*'
+              'delete:any':
+                - '*'
+          anonymous:
+            'dlake:workflows':
               'read:any':
                 - '*'
   _unified: true

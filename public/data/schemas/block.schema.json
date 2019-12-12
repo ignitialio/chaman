@@ -15,14 +15,10 @@
       "title": "Name",
       "type": "string",
       "_meta": {
-        "type": null
-      }
-    },
-    "title": {
-      "title": "Title",
-      "type": "string",
-      "_meta": {
-        "type": null
+        "type": null,
+        "i18n": {
+          "Name": [ "Nom", "Nombre" ]
+        }
       }
     },
     "type": {
@@ -42,6 +38,22 @@
           "Widget": [ "Visualisation", "Visualización" ]
         }
       }
+    },
+    "service": {
+      "title": "Associated service",
+      "type": "string",
+      "_meta": {
+        "type": null,
+        "selection": {
+          "provider": "ig-service-picker",
+          "event": "selection:service",
+          "field": "name"
+        },
+        "i18n": {
+          "Associated service": [ "Service associé", "Servicio asociado" ]
+        }
+      }
+
     },
     "description": {
       "title": "Description",
@@ -84,10 +96,15 @@
             "title": "Type",
             "type": "string",
             "enum": [
-
+              "Event", "Remote call", "Stream"
             ],
             "_meta": {
-              "type": null
+              "type": null,
+              "i18n": {
+                "Event": [ "Événement", "Evenimiento" ],
+                "Remote call": [ "Appel distant", "Llamada remota" ],
+                "Stream": [ "Flux", "Flujo" ]
+              }
             }
           },
           "method": {
@@ -145,7 +162,7 @@
             "_meta": {
               "type": null,
               "i18n": {
-                "Method": [ "Méthod", "Método" ]
+                "Method": [ "Méthode", "Método" ]
               }
             }
           }

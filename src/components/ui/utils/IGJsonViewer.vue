@@ -14,7 +14,6 @@ export default {
   watch: {
     data: function(val) {
       d3.select(this.$el).html(jsonPretty(val))
-      console.log(val)
     }
   },
   mounted() {

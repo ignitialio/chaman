@@ -27,6 +27,10 @@
         <v-icon>add</v-icon>
       </v-btn>
     </div>
+
+    <div class="blocks-right">
+      <ig-form v-if="selected && schema" v-model="selected" :schema="schema"/>
+    </div>
   </div>
 </template>
 
@@ -37,7 +41,8 @@ export default {
     return {
       blocks: [],
       search: '',
-      selected: null
+      selected: null,
+      schema: null
     }
   },
   watch: {},
@@ -48,7 +53,7 @@ export default {
   methods: {
     update() {
       this.$db.collection('blocks').then(blocksCollection => {
-        blocks.dFind({}).then(docs => {
+        blocksCollection.dFind({}).then(docs => {
           this.blocks = docs
         }).catch(err => console.log(err))
       }).catch(err => console.log(err))
@@ -56,7 +61,7 @@ export default {
     handleAdd() {
       this.selected = {
         "name": "",
-        "title": "",
+        "service": "",
         "type": "Source",
         "description": "My workflow block",
         "icon": "",
@@ -66,6 +71,12 @@ export default {
     }
   },
   mounted() {
+    fetch('data/schemas/block.schema.json').then(function(response) {
+      return response.json()
+    }).then(data => {
+      this.schema = data
+    }).catch(err => console.log(err))
+
     this.update()
   },
   beforeDestroy() {
@@ -78,6 +89,7 @@ export default {
 .blocks-layout {
   width: 100%;
   height: calc(100% - 0px);
+  display: flex;
 }
 
 .blocks-left {
@@ -105,5 +117,11 @@ export default {
   position: absolute;
   top: 78px;
   right: 8px;
+}
+
+.blocks-right {
+  flex: 1;
+  height: calc(100% - 0px);
+  padding: 0 32px;
 }
 </style>

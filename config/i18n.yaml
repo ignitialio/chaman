@@ -330,4 +330,10 @@ data:
   "Blocks":
     - "Blocs"
     - "Bloques"
+  "Access control":
+    - "Contrôle d'accès"
+    - "Control de acceso"
+  "Select item":
+    - "Sélectionner l'item"
+    - "Selectar el artículo"
 _unified: true

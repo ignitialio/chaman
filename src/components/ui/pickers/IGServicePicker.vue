@@ -1,6 +1,6 @@
 <template>
-  <div class="services-layout">
-    <v-list class="services-left-panel">
+  <div class="servicepicker-layout">
+    <v-list class="servicepicker-list">
       <v-list-item class="services-item"
         v-for="(service, index) in services" :key="index"
         @click.stop="handleSelect(service)"
@@ -18,17 +18,6 @@
         </v-list-item-content>
       </v-list-item>
     </v-list>
-
-    <div class="services-right-panel">
-      <component :is="selected.name"
-        class="services-component elevation-2"
-        v-if="selected && selected.options &&
-          selected.options.uiComponentInjection"></component>
-
-      <div>
-
-      </div>
-    </div>
   </div>
 </template>
 
@@ -39,30 +28,11 @@ import values from 'lodash/values'
 export default {
   data: () => {
     return {
-      selected: null,
-      services: null
+      services: [],
+      selected: null
     }
   },
   methods: {
-    async update() {
-      this.services = sortBy(values(this.$services.servicesDico), [ 'name' ])
-
-      for (let i = 0; i < this.services.length; i++) {
-        try {
-          let service = await this.$services.waitForService(this.services[i].name)
-          if (this.services[i].options && this.services[i].options.description) {
-            await this.getImage(this.services[i], this.services[i].name,
-              this.services[i].options.description.icon)
-          }
-
-          this.services[i].isLocal = await service.isLocal()
-        } catch (err) {
-          console.log(err)
-        }
-      }
-
-      this.$forceUpdate()
-    },
     onServiceUp(service) {
       this.update()
     },
@@ -100,8 +70,26 @@ export default {
         }
       })
     },
+    async update() {
+      this.services = sortBy(values(this.$services.servicesDico), [ 'name' ])
+
+      for (let i = 0; i < this.services.length; i++) {
+        try {
+          let service = await this.$services.waitForService(this.services[i].name)
+          if (this.services[i].options && this.services[i].options.description) {
+            await this.getImage(this.services[i], this.services[i].name,
+              this.services[i].options.description.icon)
+          }
+        } catch (err) {
+          console.log(err)
+        }
+      }
+
+      this.$forceUpdate()
+    },
     handleSelect(service) {
       this.selected = service
+      this.$services.emit('selection:service', service)
     }
   },
   mounted() {
@@ -124,34 +112,14 @@ export default {
 </script>
 
 <style scoped>
-.services-layout {
+.servicepicker-layout {
   width: 100%;
   height: calc(100% - 0px);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.services-left-panel {
-  position: relative;
-  width: calc(33% - 8px);
-  height: calc(100% - 0px)!important;
   overflow-y: auto;
 }
 
-.services-right-panel {
-  margin-right: 8px;
-  width: calc(67% - 8px);
-  height: calc(100% - 16px);
-}
-
-.services-component {
-  width: calc(100% - 4px);
-  height: calc(100% - 4px);
-  padding: 4px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.servicepicker-layout {
+  width: 100%;
 }
 
 .services-item.selected {
