@@ -45,7 +45,11 @@ export default {
       schema: null
     }
   },
-  watch: {},
+  watch: {
+    selected: function(val) {
+      this.$services.emit('view:blocks:modified')
+    }
+  },
   components: {
 
   },
@@ -68,9 +72,20 @@ export default {
         "inputs": [],
         "outputs": []
       }
+    },
+    handleSave() {
+
     }
   },
   mounted() {
+    // show contextual menu bar
+    this.$services.emit('app:context:bar', 'blocks-ctx')
+
+    this._listeners = {
+      onBlockAdd: this.handleAdd.bind(this),
+      onBlockSave: this.handleSave.bind(this)
+    }
+
     fetch('data/schemas/block.schema.json').then(function(response) {
       return response.json()
     }).then(data => {
@@ -78,9 +93,13 @@ export default {
     }).catch(err => console.log(err))
 
     this.update()
+
+    this.$services.on('view:blocks:save', this._listeners.onBlockSave)
+    this.$services.on('view:blocks:add', this._listeners.onBlockAdd)
   },
   beforeDestroy() {
-
+    this.$services.off('view:blocks:save', this._listeners.onBlockSave)
+    this.$services.off('view:blocks:add', this._listeners.onBlockAdd)
   }
 }
 </script>
@@ -123,5 +142,6 @@ export default {
   flex: 1;
   height: calc(100% - 0px);
   padding: 0 32px;
+  overflow-y: auto;
 }
 </style>

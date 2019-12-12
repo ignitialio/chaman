@@ -1,5 +1,5 @@
 <template>
-  <div v-if="schema._meta && !schema._meta.hidden" class="ig-form"
+  <div v-if="schema._meta && !schema._meta.hidden && showIf" class="ig-form"
     :class="{ 'error': error }">
 
     <v-btn class="ig-form-rmbut" small icon v-if="removable"
@@ -214,7 +214,7 @@
         </v-toolbar-items>
       </v-toolbar>
 
-      <component v-if="schema._meta && schema._meta.selection"
+      <component style="height: calc(100% - 64px)" v-if="schema._meta && schema._meta.selection"
         :is="schema._meta.selection.provider"></component>
     </ig-dialog>
   </div>
@@ -479,7 +479,6 @@ export default {
       this.$services.once(this.schema._meta.selection.event, onSelect)
     },
     helper(fct, param) {
-      console.log(fct, param)
       param = jsonpath.query(this.root, param)[0]
       return this.$helpers[fct].apply(this,  [ param ])
     }
@@ -532,6 +531,22 @@ export default {
       }
 
       return null
+    },
+    showIf() {
+      if (this.schema && this.schema._meta && this.schema._meta.showIf) {
+        let value = jsonpath.query(this.root, this.schema._meta.showIf.jsonpath)[0]
+
+        switch (this.schema._meta.showIf.condition) {
+          case 'eq': return value === this.schema._meta.showIf.value
+          case 'neq': return value !== this.schema._meta.showIf.value
+          case 'gte': return value >= this.schema._meta.showIf.value
+          case 'gt': return value > this.schema._meta.showIf.value
+          case 'lte': return value <= this.schema._meta.showIf.value
+          case 'lt': return value < this.schema._meta.showIf.value
+        }
+      }
+
+      return true
     }
   }
 }

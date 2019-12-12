@@ -88,16 +88,16 @@
             :key="key">
             {{ $t(key) }}</v-subheader>
 
-          <v-list-item v-for="item in section" :key="item.id"
+          <v-list-item v-for="item in section" :key="item.index"
             v-if="(item.title && !item.hidden && (!!user && !item.hideIfLogged))
               || (item.anonymousAccess && item.title && !item.hidden && !user)"
             @click="item.event ? $services.emit(item.event) :
               $router.push({ path: item.route.path, query: item.route.query })">
               <v-list-item-action class="app-menu-item-icon">
                 <v-icon v-if="!item.svgIcon">{{ item.icon }}</v-icon>
-                <img :ref="'menuIcon_' + item.id" v-if="item.svgIcon"
+                <img :ref="'menuIcon_' + item.index" v-if="item.svgIcon"
                   class="app-menu-icon"
-                  :src="$utils.fileUrl(item.svgIcon, null, $refs['menuIcon_' + item.id] ? $refs['menuIcon_' + item.id][0] : null)"
+                  :src="$utils.fileUrl(item.svgIcon, null, $refs['menuIcon_' + item.index] ? $refs['menuIcon_' + item.index][0] : null)"
                   alt=""/>
               </v-list-item-action>
 
@@ -205,6 +205,7 @@ import BlocksView from '../views/BlocksView.vue'
 
 import ListContextBar from '../views/context/ListContextBar.vue'
 import ItemContextBar from '../views/context/ItemContextBar.vue'
+import BlocksContextBar from '../views/context/BlocksContextBar.vue'
 
 export default {
   data: () => {
@@ -249,7 +250,8 @@ export default {
   },
   components: {
     'list-ctx': ListContextBar,
-    'item-ctx': ItemContextBar
+    'item-ctx': ItemContextBar,
+    'blocks-ctx': BlocksContextBar
   },
   methods: {
     /*

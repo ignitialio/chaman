@@ -136,6 +136,11 @@
         "type": null,
         "i18n": {
           "Inputs": [ "Entrées", "Entradas" ]
+        },
+        "showIf": {
+          "jsonpath": "$.service",
+          "condition": "neq",
+          "value": ""
         }
       }
     },
@@ -176,6 +181,10 @@
             "default": "",
             "_meta": {
               "type": null,
+              "selection": {
+                "list": "getServiceMethods",
+                "param": "$.service"
+              },
               "i18n": {
                 "Method": [ "Méthode", "Método" ]
               }
@@ -193,6 +202,11 @@
         "type": null,
         "i18n": {
           "Outputs": [ "Sorties", "Salidas" ]
+        },
+        "showIf": {
+          "jsonpath": "$.service",
+          "condition": "neq",
+          "value": ""
         }
       }
     }
