@@ -491,7 +491,6 @@ export default {
     showIf(showIf) {
       let check = item => {
         let value = jsonpath.query(this.root, item.jsonpath)[0]
-        console.log(value)
 
         switch (item.condition) {
           case 'eq': return value === item.value
@@ -512,7 +511,6 @@ export default {
               switch (showIf[i - 1].operator) {
                 case '&&':
                   result = result && check(showIf[i])
-                  console.log(showIf[i].jsonpath, showIf[i].value, result, check(showIf[i]), )
                   break
                 case '||':
                   result = result || check(showIf[i])
