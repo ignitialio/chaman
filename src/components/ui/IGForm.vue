@@ -36,7 +36,7 @@
 
           <v-text-field
             :disabled="editable"
-            :value="value" @input="handleInput"
+            :value="value" @input="handleInput" autocomplete="off"
             :label="$t(schema.title || name)"></v-text-field>
 
           <ig-fileload-but :accept="schema._meta.imageType"
@@ -53,7 +53,7 @@
           <v-text-field
             :readonly="isReadOnly"
             :disabled="editable"
-            :value="value" @input="handleInput"
+            :value="value" @input="handleInput" autocomplete="off"
             :label="$t(schema.title || name)"></v-text-field>
 
           <ig-fileload-but :accept="schema._meta.imageType"
@@ -87,7 +87,7 @@
             :type="schema._meta.type || 'text'"
             :readonly="isReadOnly"
             :disabled="editable"
-            :value="value" @input="handleInput"
+            :value="value" @input="handleInput" autocomplete="off"
             :label="$t(schema.title || name)"></v-text-field>
 
           <v-btn text icon @click="handleExternalSelectionDialog" color="blue lighten-1">
@@ -106,7 +106,7 @@
           :type="schema._meta.type || 'text'"
           :readonly="isReadOnly"
           :disabled="editable"
-          :value="value" @input="handleInput"
+          :value="value" @input="handleInput" autocomplete="off"
           :label="$t(schema.title || name)"></v-text-field>
       </div>
 
