@@ -185,9 +185,9 @@ export default {
         if (url && !url.match(/png|jpg|jpeg/)) {
           url = null
         }
-        return this.$utils.fileUrl(url, 'assets/item.png')
+        return this.$utils.fileUrl(url, 'assets/icons/cube.png')
       } else {
-        return 'assets/item.png'
+        return 'assets/icons/cube.png'
       }
     },
     computeTitle(item) {

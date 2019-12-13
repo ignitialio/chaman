@@ -29,11 +29,10 @@
         <!-- Image field -->
         <div class="ig-form-hgroup"
           v-else-if="schema._meta && schema._meta.type === 'image'">
-          <v-img style="border: 1px solid gainsboro; margin-right: 8px;"
+          <img ref="imageField"
             v-if="schema._meta.showThumbnail"
-            aspect-ratio="1" max-width="64" max-height="64"
-            :src="$utils.fileUrl(value.match(/png|jpg|jpeg|gif/) ? value : null, 'assets/item.png')">
-          </v-img>
+            style="width: 64px; height: 64px; border: 1px solid gainsboro; margin-right: 8px;"
+            :src="imageSrc"/>
 
           <v-text-field
             :disabled="editable"
@@ -576,6 +575,23 @@ export default {
       }
 
       return null
+    },
+    imageSrc() {
+      let el = this.$refs.imageField
+      if (this.value.match(/png|jpg|jpeg|gif/)) {
+        if (this.value.match(/\$\$/)) {
+          let serviceName = this.value.match(/\$\$service\((.*?)\)\/(.*)/)[1]
+          if (this.$services[serviceName]) {
+            return this.$utils.fileUrl(this.value, 'assets/icons/cube.png', el)
+          } else {
+            return 'assets/icons/cube.png'
+          }
+        } else {
+          return this.$utils.fileUrl(this.value, 'assets/icons/cube.png')
+        }
+      } else {
+        return 'assets/icons/cube.png'
+      }
     }
   }
 }

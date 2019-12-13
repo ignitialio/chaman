@@ -11,7 +11,8 @@
       <v-list class="blocks-list">
         <v-list-item v-for="block in blocks" :key="block.name">
           <v-list-item-avatar>
-            <v-img :src="$utils.fileUrl(block.icon)" alt=""></v-img>
+            <v-img :ref="'icon_' + block.name"
+              :src="icon(block)" alt=""></v-img>
           </v-list-item-avatar>
 
           <v-list-item-content>
@@ -52,11 +53,23 @@ export default {
     }
   },
   watch: {
-    selected: function(val, old) {
-      if (old && val._id && ('' + val._id === '' + old._id)) {
-        this.$services.emit('view:blocks:modified', true)
-      } else if (!val._id) {
-        this.$services.emit('view:blocks:modified', true)
+    selected: {
+      handler: function(val, old) {
+        if (old && val._id && ('' + val._id === '' + old._id)) {
+          this.$services.emit('view:blocks:modified', true)
+        } else if (!val._id) {
+          this.$services.emit('view:blocks:modified', true)
+        }
+      },
+      deep: true
+    },
+    'selected.service': function(val) {
+      if (val) {
+        this.selected.icon = '$$service(' + val + ')/assets/' +
+          val + '-64.png'
+
+        this.$forceUpdate()
+        console.log(this.selected.icon)
       }
     }
   },
@@ -74,13 +87,13 @@ export default {
     },
     handleAdd() {
       this.selected = {
-        "name": "",
-        "service": "",
-        "type": "Processing",
-        "description": "",
-        "icon": "assets/icons/cube.png",
-        "inputs": [],
-        "outputs": []
+        'name': '',
+        'service': '',
+        'type': 'Processing',
+        'description': '',
+        'icon': 'assets/icons/cube.png',
+        'inputs': [],
+        'outputs': []
       }
     },
     handleDelete(item) {
@@ -107,6 +120,12 @@ export default {
           this.$services.emit('app:notification', this.$t('Modification failed'))
         }
       }).catch(err => console.log(err))
+    },
+    icon(block) {
+      console.log('+++', this.$utils.fileUrl(block.icon, 'assets/icons/cube.png',
+        $refs['icon_' + block.name] ? $refs['icon_' + block.name][0] : null))
+      return this.$utils.fileUrl(block.icon, 'assets/icons/cube.png',
+        $refs['icon_' + block.name] ? $refs['icon_' + block.name][0] : null)
     }
   },
   mounted() {
