@@ -1,5 +1,6 @@
 <template>
-  <div v-if="schema._meta && !schema._meta.hidden && showIf" class="ig-form"
+  <div v-if="schema._meta && !schema._meta.hidden && showIf(schema._meta.showIf)"
+    class="ig-form"
     :class="{ 'error': error }">
 
     <v-btn class="ig-form-rmbut" small icon v-if="removable"
@@ -18,7 +19,7 @@
         <v-select v-if="schema.enum" :label="$t(schema.title || name)"
           :disabled="editable"
           :items="translatedArray(schema.enum)"
-          :value="$t(value)" @input="handleInput"></v-select>
+          :value="value" @input="handleInput"></v-select>
 
         <v-switch inset
           v-else-if="schema.type === 'boolean'"
@@ -127,7 +128,7 @@
       class="ig-form-next"
       v-for="(prop, index) in properties" :key="index">
 
-      <div v-if="!isObjectId(value[prop]) && !isPrimitive(value[prop])"
+      <div v-if="!isObjectId(value[prop]) && !isPrimitive(value[prop]) && showIf(schema.properties[prop]._meta.showIf)"
         class="ig-form-next-header">
         <div class="ig-form-next-header--text"
           :class="{ 'editable': editable }">
@@ -152,7 +153,7 @@
     <!-- next level: is Array -->
     <div v-if="value && schema.type === 'array'"
       class="ig-form-next">
-      <ig-form v-if="!Array.isArray(schema.items) && schema.items.type !== 'object'"
+      <ig-form v-if="!Array.isArray(schema.items) && schema.items.type !== 'object' && showIf(schema.items._meta.showIf)"
         v-for="(item, index) in value" :key="index"
         :name="$t(schema.items.title || schema.items[index].name)"
         :schema.sync="schema.items"
@@ -162,7 +163,7 @@
         @remove="handleRemove(index)"
         :root="root"></ig-form>
 
-      <ig-form v-if="schema.items.type === 'object'"
+      <ig-form v-if="schema.items.type === 'object' && showIf(schema.items._meta.showIf)"
         v-for="(item, index) in value" :key="index"
         :name="$t(schema.items.title || schema.items[index].name) + '[' + index + ']'"
         :schema.sync="schema.items"
@@ -172,7 +173,7 @@
         @remove="handleRemove(index)"
         :root="root"></ig-form>
 
-      <ig-form v-if="itemSchema && Array.isArray(schema.items)"
+      <ig-form v-if="itemSchema && Array.isArray(schema.items) && showIf(itemSchema._meta.showIf)"
         v-for="(itemSchema, index) in schema.items" :key="index"
         :name="$t(itemSchema.title || itemSchema.name)"
         :schema.sync="itemSchema"
@@ -326,7 +327,12 @@ export default {
       }
     },
     translatedArray(arr) {
-      return map(arr, e => this.$t(e))
+      return map(arr, e => {
+        return {
+          text: this.$t(e),
+          value: e
+        }
+      })
     },
     isObjectId(obj) {
       let isObjectId = obj ? obj._bsontype === 'ObjectID' : false
@@ -481,6 +487,47 @@ export default {
     helper(fct, param) {
       param = jsonpath.query(this.root, param)[0]
       return this.$helpers[fct].apply(this,  [ param ])
+    },
+    showIf(showIf) {
+      let check = item => {
+        let value = jsonpath.query(this.root, item.jsonpath)[0]
+        console.log(value)
+
+        switch (item.condition) {
+          case 'eq': return value === item.value
+          case 'neq': return value !== item.value
+          case 'gte': return value >= item.value
+          case 'gt': return value > item.value
+          case 'lte': return value <= item.value
+          case 'lt': return value < item.value
+        }
+      }
+
+      if (showIf) {
+        if (Array.isArray(showIf)) {
+          let result = check(showIf[0])
+          for (let i = 1; i < showIf.length; i++) {
+            if (showIf[i].operator) continue
+            if (showIf[i - 1].operator) {
+              switch (showIf[i - 1].operator) {
+                case '&&':
+                  result = result && check(showIf[i])
+                  console.log(showIf[i].jsonpath, showIf[i].value, result, check(showIf[i]), )
+                  break
+                case '||':
+                  result = result || check(showIf[i])
+                  break
+              }
+            }
+          }
+
+          return result
+        } else {
+          return check(showIf)
+        }
+      }
+
+      return true
     }
   },
   async beforeMount() {
@@ -531,22 +578,6 @@ export default {
       }
 
       return null
-    },
-    showIf() {
-      if (this.schema && this.schema._meta && this.schema._meta.showIf) {
-        let value = jsonpath.query(this.root, this.schema._meta.showIf.jsonpath)[0]
-
-        switch (this.schema._meta.showIf.condition) {
-          case 'eq': return value === this.schema._meta.showIf.value
-          case 'neq': return value !== this.schema._meta.showIf.value
-          case 'gte': return value >= this.schema._meta.showIf.value
-          case 'gt': return value > this.schema._meta.showIf.value
-          case 'lte': return value <= this.schema._meta.showIf.value
-          case 'lt': return value < this.schema._meta.showIf.value
-        }
-      }
-
-      return true
     }
   }
 }

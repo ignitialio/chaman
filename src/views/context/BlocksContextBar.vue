@@ -32,8 +32,8 @@ export default {
     handleItemSave() {
       this.$services.emit('view:blocks:save')
     },
-    handleItemModified() {
-      this.modified = true
+    handleItemModified(val) {
+      this.modified = val
     }
   },
   mounted() {

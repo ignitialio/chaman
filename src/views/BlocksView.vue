@@ -29,7 +29,13 @@
     </div>
 
     <div class="blocks-right">
-      <ig-form v-if="selected && schema" v-model="selected" :schema="schema" :root="selected"/>
+      <ig-form v-if="selected && schema" class="blocks-form"
+        v-model="selected" :schema="schema" :root="selected"/>
+
+      <div v-if="selected && selected.service" class="blocks-section">{{ $t('Settings') }}</div>
+
+      <component v-if="selected && selected.service" :is="selected.service"
+        :defaultMethod="selected.type === 'Source' ? selected.method : null"/>
     </div>
   </div>
 </template>
@@ -46,8 +52,12 @@ export default {
     }
   },
   watch: {
-    selected: function(val) {
-      this.$services.emit('view:blocks:modified')
+    selected: function(val, old) {
+      if (old && val._id && ('' + val._id === '' + old._id)) {
+        this.$services.emit('view:blocks:modified', true)
+      } else if (!val._id) {
+        this.$services.emit('view:blocks:modified', true)
+      }
     }
   },
   components: {
@@ -66,15 +76,37 @@ export default {
       this.selected = {
         "name": "",
         "service": "",
-        "type": "",
+        "type": "Processing",
         "description": "",
         "icon": "assets/icons/cube.png",
         "inputs": [],
         "outputs": []
       }
     },
+    handleDelete(item) {
+      this.$db.collection('blocks').then(blocksCollection => {
+        blocksCollection.dDelete(item).then(result => {
+          this.update()
+        }).catch(err => console.log(err))
+      }).catch(err => console.log(err))
+    },
     handleSave() {
+      this.$db.collection('blocks').then(async blocksCollection => {
+        try {
+          let result
+          if (this.selected._id) {
+            result = await blocksCollection.dUpdate({ _id: this.selected._id }, this.selected)
+          } else {
+            result = await blocksCollection.dPut(this.selected)
+            this.selected._id = result._id
+          }
 
+          this.$services.emit('view:blocks:modified', false)
+          this.$services.emit('app:notification', this.$t('Modification done'))
+        } catch (err) {
+          this.$services.emit('app:notification', this.$t('Modification failed'))
+        }
+      }).catch(err => console.log(err))
     }
   },
   mounted() {
@@ -143,5 +175,15 @@ export default {
   height: calc(100% - 0px);
   padding: 0 32px;
   overflow-y: auto;
+}
+
+.blocks-form {
+  height: auto!important;
+}
+
+.blocks-section {
+  margin: 32px 0;
+  font-weight: bold;
+  border-bottom: 1px solid gainsboro;
 }
 </style>

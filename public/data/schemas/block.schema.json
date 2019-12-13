@@ -81,6 +81,27 @@
     "inputs": {
       "title": "Inputs",
       "type": "array",
+      "_meta": {
+        "type": null,
+        "i18n": {
+          "Inputs": [ "Entrées", "Entradas" ]
+        },
+        "showIf": [
+          {
+            "jsonpath": "$.service",
+            "condition": "neq",
+            "value": ""
+          },
+          {
+            "operator": "&&"
+          },
+          {
+            "jsonpath": "$.type",
+            "condition": "neq",
+            "value": "Source"
+          }
+        ]
+      },
       "items": {
         "title": "Input",
         "type": "object",
@@ -131,22 +152,32 @@
             "Input": [ "Entrée", "Entrada" ]
           }
         }
-      },
-      "_meta": {
-        "type": null,
-        "i18n": {
-          "Inputs": [ "Entrées", "Entradas" ]
-        },
-        "showIf": {
-          "jsonpath": "$.service",
-          "condition": "neq",
-          "value": ""
-        }
       }
     },
     "outputs": {
       "title": "Outputs",
       "type": "array",
+      "_meta": {
+        "type": null,
+        "i18n": {
+          "Outputs": [ "Sorties", "Salidas" ]
+        },
+        "showIf": [
+          {
+            "jsonpath": "$.service",
+            "condition": "neq",
+            "value": ""
+          },
+          {
+            "operator": "&&"
+          },
+          {
+            "jsonpath": "$.type",
+            "condition": "neq",
+            "value": "Widget"
+          }
+        ]
+      },
       "items": {
         "title": "Output",
         "type": "object",
@@ -196,17 +227,6 @@
           "i18n": {
             "Output": [ "Sortie", "Salida" ]
           }
-        }
-      },
-      "_meta": {
-        "type": null,
-        "i18n": {
-          "Outputs": [ "Sorties", "Salidas" ]
-        },
-        "showIf": {
-          "jsonpath": "$.service",
-          "condition": "neq",
-          "value": ""
         }
       }
     }
