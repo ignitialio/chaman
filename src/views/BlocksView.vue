@@ -33,10 +33,12 @@
       <ig-form v-if="selected && schema" class="blocks-form"
         v-model="selected" :schema="schema" :root="selected"/>
 
-      <div v-if="selected && selected.service" class="blocks-section">{{ $t('Settings') }}</div>
+      <div v-if="selected && selected.service"
+        class="blocks-section">{{ $t('Settings') }}</div>
 
-      <component v-if="selected && selected.service" :is="selected.service"
-        :defaultMethod="selected.type === 'Source' ? selected.method : null"/>
+      <component v-if="selected && selected.service && $services[selected.service]"
+        :is="selected.service"
+        :defaultMethod="selected.type === 'Source' && selected.outputs.length === 1 ? selected.outputs[0].method : null"/>
     </div>
   </div>
 </template>
@@ -68,8 +70,14 @@ export default {
         this.selected.icon = '$$service(' + val + ')/assets/' +
           val + '-64.png'
 
+        if (this.$services[val]) {
+          this.$services[val].addInstance(this.selected.id).catch(err => {
+            // silently fails: no multinstance
+            console.log(err, 'no multiinstance for service [%s]', val)
+          })
+        }
+
         this.$forceUpdate()
-        console.log(this.selected.icon)
       }
     }
   },
@@ -87,13 +95,15 @@ export default {
     },
     handleAdd() {
       this.selected = {
-        'name': '',
-        'service': '',
-        'type': 'Processing',
-        'description': '',
-        'icon': 'assets/icons/cube.png',
-        'inputs': [],
-        'outputs': []
+        id: this.$utils.uuid(),
+        name: '',
+        service: '',
+        instance: '',
+        type: 'Processing',
+        description: '',
+        icon: 'assets/icons/cube.png',
+        inputs: [],
+        outputs: []
       }
     },
     handleDelete(item) {
@@ -122,8 +132,6 @@ export default {
       }).catch(err => console.log(err))
     },
     icon(block) {
-      console.log('+++', this.$utils.fileUrl(block.icon, 'assets/icons/cube.png',
-        $refs['icon_' + block.name] ? $refs['icon_' + block.name][0] : null))
       return this.$utils.fileUrl(block.icon, 'assets/icons/cube.png',
         $refs['icon_' + block.name] ? $refs['icon_' + block.name][0] : null)
     }

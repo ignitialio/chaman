@@ -80,6 +80,16 @@ module.exports = {
     }, {
       name: 'workflows',
       options: {
+        indexes: [
+          {
+            key: 'id',
+            type: -1,
+            options: {
+              name: 'id_desc',
+              unique: true
+            }
+          }
+        ],
         grants: {
           __privileged__: {
             'dlake:workflows': {

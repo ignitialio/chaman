@@ -11,6 +11,14 @@
     }
   },
   "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string",
+      "readOnly": true,
+      "_meta": {
+        "type": null
+      }
+    },
     "name": {
       "title": "Name",
       "type": "string",
@@ -51,9 +59,27 @@
         },
         "i18n": {
           "Associated service": [ "Service associé", "Servicio asociado" ]
+        },
+        "showIf": {
+          "jsonpath": "$.external",
+          "condition": "neq",
+          "value": true
         }
       }
-
+    },
+    "instance": {
+      "title": "Instance",
+      "type": "string",
+      "_meta": {
+        "type": null,
+        "i18n": {
+          "Instance": [ "Instance", "Instancia" ]
+        },
+        "selection": {
+          "list": "getServiceInstances",
+          "params": [ "$.service" ]
+        }
+      }
     },
     "description": {
       "title": "Description",
@@ -138,7 +164,7 @@
               "type": null,
               "selection": {
                 "list": "getServiceMethods",
-                "param": "$.service"
+                "params": [ "$.service", "$.instance"  ]
               },
               "i18n": {
                 "Method": [ "Méthode", "Método" ]
@@ -214,7 +240,7 @@
               "type": null,
               "selection": {
                 "list": "getServiceMethods",
-                "param": "$.service"
+                "params": [ "$.service", "$.instance" ]
               },
               "i18n": {
                 "Method": [ "Méthode", "Método" ]

@@ -49,8 +49,6 @@ export default {
             this.$forceUpdate()
           })
           .catch(err => console.log(err))
-      } else {
-        console.log('no description for service [%s]', item.name)
       }
     },
     getImage(itemToUpdate, serviceName, fileName) {

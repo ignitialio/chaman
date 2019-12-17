@@ -129,6 +129,21 @@ services:
     networks:
       infra:
 
+  http:
+    image: ignitial/http:1.0.0
+    container_name: http
+    ports:
+      - "21205:21205"
+    volumes:
+      - /home/${USER}/Documents/Projects/iio/services/http:/opt/http
+    environment:
+      - IIOS_REDIS_HOST=redis
+      - IIOS_NAMESPACE=${IIOS_NAMESPACE}
+      - IIOS_SERVER_HOST=0.0.0.0
+      - IIOS_SERVER_PORT=21205
+    networks:
+      infra:
+
 networks:
   infra:
     external: true
