@@ -44,6 +44,7 @@
 </template>
 
 <script>
+import findIndex from 'lodash/findIndex'
 
 export default {
   data() {
@@ -88,8 +89,25 @@ export default {
   methods: {
     update() {
       this.$db.collection('blocks').then(blocksCollection => {
-        blocksCollection.dFind({}).then(docs => {
+        blocksCollection.dFind({}).then(async docs => {
           this.blocks = docs
+
+          // clean up services instances when no associated block
+          for (let service in this.$services.servicesDico) {
+            try {
+              let instances = await this.$services[service].getInstances()
+
+              for (let instanceId of instances) {
+                let idx = findIndex(this.blocks, e => e.id === instanceId)
+                if (idx === -1) {
+                  await this.$services[service].removeInstance(instanceId)
+                  console.log('removed instance [%s]', instanceId)
+                }
+              }
+            } catch (err) {
+              !!err
+            }
+          }
         }).catch(err => console.log(err))
       }).catch(err => console.log(err))
     },

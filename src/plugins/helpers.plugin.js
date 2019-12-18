@@ -6,7 +6,6 @@ export default {
           try {
             if (this.$services[serviceName]) {
               let methods = await this.$services[serviceName].getMethods(instance)
-              console.log(instance, methods)
               return methods
             } else {
               return null

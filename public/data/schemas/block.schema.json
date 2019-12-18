@@ -164,7 +164,11 @@
               "type": null,
               "selection": {
                 "list": "getServiceMethods",
-                "params": [ "$.service", "$.instance"  ]
+                "params": [ "$.service", "$.instance"  ],
+                "text": {
+                  "match": "_$.instance",
+                  "value": ""
+                }
               },
               "i18n": {
                 "Method": [ "Méthode", "Método" ]
@@ -240,7 +244,11 @@
               "type": null,
               "selection": {
                 "list": "getServiceMethods",
-                "params": [ "$.service", "$.instance" ]
+                "params": [ "$.service", "$.instance" ],
+                "text": {
+                  "match": "_$.instance",
+                  "value": ""
+                }
               },
               "i18n": {
                 "Method": [ "Méthode", "Método" ]

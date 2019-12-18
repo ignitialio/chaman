@@ -485,7 +485,7 @@ export default {
 
       this.$services.once(this.schema._meta.selection.event, onSelect)
     },
-    listFromFunctionHelper(fct, params, paramValue) {
+    listFromFunctionHelper(fct, params, paramValue, text) {
       params = map(params, e => jsonpath.query(this.root, e)[0])
       if (paramValue) {
         params[paramValue.index] = paramValue.value
@@ -494,9 +494,37 @@ export default {
       let result = this.$helpers[fct].apply(this,  params)
       if (typeof result.then == 'function') {
         result.then(r => {
+          if (text) {
+            r = map(r, e => {
+              text.match =
+                text.match.replace(/\$\.(.*)/g, m => jsonpath.query(this.root, m)[0])
+              text.value =
+                text.value.replace(/\$\.(.*)/g, m => jsonpath.query(this.root, m)[0])
+
+              return {
+                text: e.replace(text.match, text.value),
+                value: e
+              }
+            })
+          }
+
           this.listFromFunctionItems = r
         }).catch(err => console.log(err))
       } else {
+        if (text) {
+          result = map(result, e => {
+            text.match =
+              text.match.replace(/\$\.(.*)/g, m => jsonpath.query(this.root, '$.' + m)[0])
+            text.value =
+              text.value.replace(/\$\.(.*)/g, m => jsonpath.query(this.root, '$.' + m)[0])
+
+            return {
+              text: e.replace(text.match, text.value),
+              value: e
+            }
+          })
+        }
+
         this.listFromFunctionItems = result
       }
     },
@@ -575,14 +603,16 @@ export default {
     if (this.schema._meta && this.schema._meta.selection &&
       this.schema._meta.selection.list) {
       let params = this.schema._meta.selection.params
-      this.listFromFunctionHelper(this.schema._meta.selection.list, params)
+      this.listFromFunctionHelper(this.schema._meta.selection.list,
+        params, undefined, this.schema._meta.selection.text)
 
       for (let p = 0; p < params.length; p++) {
         this.$watch(params[p].replace('$', 'root'), function (val) {
           let paramValue = { index: p, value: val }
           this.listFromFunctionHelper(this.schema._meta.selection.list,
             params,
-            paramValue)
+            paramValue,
+            this.schema._meta.selection.text)
         })
       }
     }
