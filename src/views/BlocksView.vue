@@ -71,7 +71,7 @@ export default {
         this.selected.icon = '$$service(' + val + ')/assets/' +
           val + '-64.png'
 
-        if (this.$services[val]) {
+        if (this.$services[val]&& this.$services[val].addInstance) {
           this.$services[val].addInstance(this.selected.id).catch(err => {
             // silently fails: no multinstance
             console.log(err, 'no multiinstance for service [%s]', val)

@@ -107,10 +107,13 @@ export default {
           currentPath = what.name
         }
       }
+
       this.$emit('pathSelection', currentPath)
+      this.$services.emit('selection:jsonpath', currentPath)
     },
     handlePathSelection(which) {
       this.$emit('pathSelection', which)
+      this.$services.emit('selection:jsonpath', which)
     },
     nextPath(what) {
       let currentPath = (this.path ? this.path : '')

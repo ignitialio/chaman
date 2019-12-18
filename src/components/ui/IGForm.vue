@@ -282,7 +282,9 @@ export default {
       this.$emit('update:schema', this._schema)
     },
     'schema.enum': function(val) {
-      this.$refs.settings.$forceUpdate()
+      if (this.$refs.settings) {
+        this.$refs.settings.$forceUpdate()
+      }
     }
   },
   data: () => {

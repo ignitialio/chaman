@@ -39,6 +39,7 @@ export default {
       }
 
       this.$emit('input', color)
+      this.$service.emit('selection:color', color)
       this.pickerVisible = false
     },
     async showPicker(e) {

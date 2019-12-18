@@ -17,7 +17,7 @@ export default {
         },
         getServiceInstances: async function(serviceName) {
           try {
-            if (this.$services[serviceName]) {
+            if (this.$services[serviceName] && this.$services[serviceName].getInstances) {
               let instances = await this.$services[serviceName].getInstances()
               return instances
             } else {
