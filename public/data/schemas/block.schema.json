@@ -6,8 +6,8 @@
     "type": null,
     "list": {
       "icon": "$.icon",
-      "title": "$.title",
-      "subtitle": "$.name"
+      "title": "$.name",
+      "subtitle": "$.description"
     }
   },
   "properties": {

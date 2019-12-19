@@ -1,7 +1,7 @@
 <template>
   <div v-if="schema._meta && !schema._meta.hidden && showIf(schema._meta.showIf)"
     class="ig-form"
-    :class="{ 'error': error }">
+    :class="{ 'error': error, 'removable': removable }">
 
     <v-btn class="ig-form-rmbut" small icon v-if="removable"
       @click="handleRemoveItem">
@@ -16,11 +16,21 @@
           'threequarter': !editable
         }">
 
-        <v-select v-if="schema.enum" :label="$t(schema.title || name)"
+        <!-- enum selection with component -->
+        <component v-if="schema.enum && schema._meta.component"
+          :label="$t(schema.title || name)"
+          :is="schema._meta.component.name"
+          :items="translatedArray(schema.enum)"
+          :properties="schema._meta.component.properties"
+          :value="value" @input="handleInput"/>
+
+        <!-- enum -->
+        <v-select v-else-if="schema.enum" :label="$t(schema.title || name)"
           :disabled="editable"
           :items="translatedArray(schema.enum)"
           :value="value" @input="handleInput"></v-select>
 
+        <!-- boolean -->
         <v-switch inset
           v-else-if="schema.type === 'boolean'"
           :label="$t(schema.title || name)"
@@ -93,6 +103,14 @@
           <v-btn text icon @click="handleExternalSelectionDialog" color="blue lighten-1">
             <v-icon>play_for_work</v-icon>
           </v-btn>
+        </div>
+
+        <!-- color -->
+        <div class="igform-selector"
+          v-else-if="schema._meta && schema._meta.type === 'color'">
+          <label style="margin-right: 4px;">{{ $t(schema.title || name) }}</label>
+          <ig-color-picker :value="value" :readonly="isReadOnly"
+            :disabled="editable" @input="handleInput"/>
         </div>
 
         <!-- with list provided by function -->
@@ -666,6 +684,11 @@ export default {
   position: relative;
 }
 
+.ig-form.removable {
+  width: calc(100% - 48px);
+  margin-left: 48px;
+}
+
 .ig-form-content {
   width: 100%;
   display: flex;
@@ -740,7 +763,7 @@ export default {
 .ig-form-rmbut {
   position: absolute;
   top: 4px;
-  left: 8px;
+  left: -48px;
   z-index: 100;
 }
 

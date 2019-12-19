@@ -9,6 +9,7 @@ import IGFormSettings from '../components/ui/utils/IGFormSettings.vue'
 import IGSchemaManager from '../components/ui/utils/IGSchemaManager.vue'
 import IGColorPicker from '../components/ui/pickers/IGColorPicker.vue'
 import IGJSONPicker from '../components/ui/pickers/IGJSONPicker.vue'
+import IGImageBasedPicker from '../components/ui/pickers/IGImageBasedPicker.vue'
 import IGEditableLabel from '../components/ui/IGEditableLabel.vue'
 import IGImageSelector from '../components/ui/IGImageSelector.vue'
 import IGButtonWithConfirm from '../components/ui/IGButtonWithConfirm.vue'
@@ -36,6 +37,7 @@ export default {
       Vue.component('ig-btn-confirm', IGButtonWithConfirm)
       Vue.component('ig-color-picker', IGColorPicker)
       Vue.component('ig-json-picker', IGJSONPicker)
+      Vue.component('ig-image-based-picker', IGImageBasedPicker)
       Vue.component('ig-label', IGEditableLabel)
       Vue.component('ig-img-selector', IGImageSelector)
       Vue.component('ig-dialog', IGDialog)

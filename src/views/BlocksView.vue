@@ -11,12 +11,11 @@
       <v-list class="blocks-list">
         <v-list-item v-for="block in blocks" :key="block.name">
           <v-list-item-avatar>
-            <v-img :ref="'icon_' + block.name"
-              :src="icon(block)" alt=""></v-img>
+            <img :id="'icon_' + block.id" :src="icon(block)" alt=""/>
           </v-list-item-avatar>
 
           <v-list-item-content>
-            <v-list-item-title v-text="block.title">
+            <v-list-item-title v-text="block.name">
             </v-list-item-title>
             <v-list-item-subtitle v-text="block.description"></v-list-item-subtitle>
           </v-list-item-content>
@@ -150,8 +149,11 @@ export default {
       }).catch(err => console.log(err))
     },
     icon(block) {
-      return this.$utils.fileUrl(block.icon, 'assets/icons/cube.png',
-        $refs['icon_' + block.name] ? $refs['icon_' + block.name][0] : null)
+      (async () => {
+        let el = (await this.$utils.waitForDOMReady('#icon_' + block.id)).node()
+        this.$utils.fileUrl(block.icon, 'assets/icons/cube.png', el)
+      })()
+      return ''
     }
   },
   mounted() {
