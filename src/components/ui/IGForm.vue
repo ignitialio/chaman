@@ -10,12 +10,7 @@
 
     <div v-if="isObjectId(value) || isPrimitive(value) || value === null"
       class="ig-form-content">
-
-      <div class="ig-form-items" :class="{
-          'half': editable,
-          'threequarter': !editable
-        }">
-
+      <div class="ig-form-items threequarter">
         <!-- enum selection with component -->
         <component v-if="schema.enum && schema._meta.component"
           :label="$t(schema.title || name)"
@@ -26,7 +21,6 @@
 
         <!-- enum -->
         <v-select v-else-if="schema.enum" :label="$t(schema.title || name)"
-          :disabled="editable"
           :items="translatedArray(schema.enum)"
           :value="value" @input="handleInput"></v-select>
 
@@ -45,7 +39,6 @@
             :src="imageSrc"/>
 
           <v-text-field
-            :disabled="editable"
             :value="value" @input="handleInput" autocomplete="off"
             :label="$t(schema.title || name)"></v-text-field>
 
@@ -62,7 +55,6 @@
           v-else-if="schema._meta && schema._meta.type === 'file'">
           <v-text-field
             :readonly="isReadOnly"
-            :disabled="editable"
             :value="value" @input="handleInput" autocomplete="off"
             :label="$t(schema.title || name)"></v-text-field>
 
@@ -76,7 +68,6 @@
 
         <v-date-picker
           v-else-if="schema._meta && schema._meta.type && schema._meta.type.match(/date|time/)"
-          :disabled="editable"
           :value="new Date(value).toISOString().slice(0, 10)" @input="handleInput"
           :label="$t(schema.title || name)"></v-date-picker>
 
@@ -96,7 +87,6 @@
           <v-text-field
             :type="schema._meta.type || 'text'"
             :readonly="isReadOnly"
-            :disabled="editable"
             :value="value" @input="handleInput" autocomplete="off"
             :label="$t(schema.title || name)"></v-text-field>
 
@@ -110,62 +100,39 @@
           v-else-if="schema._meta && schema._meta.type === 'color'">
           <label style="margin-right: 4px;">{{ $t(schema.title || name) }}</label>
           <ig-color-picker :value="value" :readonly="isReadOnly"
-            :disabled="editable" @input="handleInput"/>
+            @input="handleInput"/>
         </div>
 
         <!-- with list provided by function -->
         <v-select
           v-else-if="schema._meta && schema._meta.selection && schema._meta.selection.list"
           :label="$t(schema.title || name)"
-          :disabled="editable"
           :items="listFromFunctionItems"
           :value="$t(value)" @input="handleInput"></v-select>
 
         <v-text-field v-else
           :type="schema._meta.type || 'text'"
           :readonly="isReadOnly"
-          :disabled="editable"
           :value="value" @input="handleInput" autocomplete="off"
           :label="$t(schema.title || name)"></v-text-field>
-      </div>
-
-      <!-- Meta edition: editing the schema -->
-      <div class="ig-form-meta" v-if="editable">
-        <v-select :label="$t('Type')"
-          :items="jsonTypes" v-model="schema.type"></v-select>
-
-        <v-btn v-if="hasSettings" icon @click="handleSettingsDialog(schema)">
-          <v-icon>settings</v-icon>
-        </v-btn>
       </div>
     </div>
 
     <!-- next level: is Object, but not geopoint -->
     <div v-if="value && !isPrimitive(value) && schema.properties &&
-      schema.type !== 'array' && schema._meta.type !== 'geopoint'"
+      schema.type !== 'array' && schema._meta.type !== 'geopoint' && schema.properties[prop]"
       class="ig-form-next"
       v-for="(prop, index) in properties" :key="index">
-
       <div v-if="!isObjectId(value[prop]) && !isPrimitive(value[prop]) && showIf(schema.properties[prop]._meta.showIf)"
         class="ig-form-next-header">
-        <div class="ig-form-next-header--text"
-          :class="{ 'editable': editable }">
+        <div class="ig-form-next-header--text">
           {{ schema.properties[prop] ? $t(schema.properties[prop].title) : $t(prop) }}</div>
-
-        <div v-if="hasSettings && editable"
-          class="ig-form-next-header--actions">
-          <v-btn icon
-            @click.stop="handleSettingsDialog(schema.properties[prop])">
-            <v-icon>settings</v-icon>
-          </v-btn>
-        </div>
       </div>
 
       <ig-form :name="prop"
-        :schema.sync="schema.properties[prop]"
-        @update:schema="handleUpdateSchema(prop, $event)"
+        :schema="schema.properties[prop]"
         class="ig-form-next-form"
-        v-model="value[prop]" :editable="editable" :root="root"></ig-form>
+        v-model="value[prop]" :root="root"></ig-form>
     </div>
 
     <!-- next level: is Array -->
@@ -174,30 +141,27 @@
       <ig-form v-if="!Array.isArray(schema.items) && schema.items.type !== 'object' && showIf(schema.items._meta.showIf)"
         v-for="(item, index) in value" :key="index"
         :name="$t(schema.items.title || schema.items[index].name)"
-        :schema.sync="schema.items"
-        @update:schema="handleUpdateSchema(null, $event)"
+        :schema="schema.items"
         class="ig-form-next-object"
-        :value="item" :editable="editable" removable
+        :value="item" removable
         @remove="handleRemove(index)"
         :root="root"></ig-form>
 
-      <ig-form v-if="schema.items.type === 'object' && showIf(schema.items._meta.showIf)"
+      <ig-form v-if="schema.items.type === 'object' && schema.items !== undefined && showIf(schema.items._meta.showIf)"
         v-for="(item, index) in value" :key="index"
         :name="$t(schema.items.title || schema.items[index].name) + '[' + index + ']'"
-        :schema.sync="schema.items"
-        @update:schema="handleUpdateSchema($t('item'), $event)"
+        :schema="schema.items"
         class="ig-form-next-object"
-        :value="item" :editable="editable" removable
+        :value="item" removable
         @remove="handleRemove(index)"
         :root="root"></ig-form>
 
       <ig-form v-if="itemSchema && Array.isArray(schema.items) && showIf(itemSchema._meta.showIf)"
         v-for="(itemSchema, index) in schema.items" :key="index"
         :name="$t(itemSchema.title || itemSchema.name)"
-        :schema.sync="itemSchema"
-        @update:schema="handleUpdateSchema($t('item'), $event)"
+        :schema="itemSchema"
         class="ig-form-next-object"
-        :value="value[index]" :editable="editable" removable
+        :value="value[index]" removable
         @remove="handleRemove(index)"
         :root="root"></ig-form>
     </div>
@@ -211,13 +175,8 @@
     <div v-if="schema._meta.type === 'geopoint'"
       class="ig-form-geo">
       <ig-geo v-if="schema._meta.type === 'geopoint'" :height="400"
-        :disabled="editable" :marker="value" @update:marker="handleGeoloc"/>
+        :marker="value" @update:marker="handleGeoloc"/>
     </div>
-
-    <!-- Schema settings dialog -->
-    <ig-form-settings ref="settings" v-model="settingsDialog"
-      :name="name"
-      :schema.sync="schemaOnEdit"></ig-form-settings>
 
     <!-- Selection dialog -->
     <ig-dialog v-model="selectionDialog" fullscreen>
@@ -252,9 +211,6 @@ export default {
       type: String
     },
     value: {},
-    editable: {
-      type: Boolean
-    },
     removable: {
       type: Boolean
     },
@@ -307,36 +263,7 @@ export default {
   },
   data: () => {
     return {
-      jsonTypes: [
-        {
-          value: 'boolean',
-          text: 'Boolean'
-        },
-        {
-          value: 'string',
-          text: 'String'
-        },
-        {
-          value: 'number',
-          text: 'Number'
-        },
-        {
-          value: 'integer',
-          text: 'Integer'
-        },
-        {
-          value: 'null',
-          text: 'Null'
-        },
-        {
-          value: 'objectid',
-          text: 'ObjectID'
-        }
-      ],
-      hasSettings: false,
-      settingsDialog: false,
       selectionDialog: false,
-      schemaOnEdit: null,
       error: false,
       /* populate selection list with helpers */
       listFromFunctionItems: []
@@ -379,24 +306,6 @@ export default {
 
       this.$emit('update:schema', this._schema)
     },
-    updateSettings() {
-      if (!this._schema._meta) return
-      switch (this._schema._meta.type) {
-        case 'null':
-          this.hasSettings = false
-          break
-        case 'objectid':
-          this.hasSettings = false
-          break
-        default:
-          this.hasSettings = true
-      }
-    },
-    handleSettingsDialog(schema) {
-      this.schemaOnEdit = schema
-      console.log(global.$j(this.schemaOnEdit))
-      this.settingsDialog = true
-    },
     handleInput(val) {
       this.$emit('input', val)
     },
@@ -413,15 +322,6 @@ export default {
       } else {
         this.$emit('input', val)
       }
-    },
-    handleUpdateSchema(prop, val) {
-      if (this.schema.type === 'object') {
-        this._schema.properties[prop] = val
-      } else if (this.schema.type === 'array') {
-        this._schema.items = val
-      }
-
-      this.$emit('update:schema', this._schema)
     },
     /* adds item to an array generating fake data */
     handleAddItem() {
@@ -600,8 +500,6 @@ export default {
     // console.log(this.name, global.$j(this._schema))
   },
   mounted() {
-    this.updateSettings()
-
     // future use: sets root component for all
     if (this.$parent) {
       if (this.$parent.$options._componentTag === 'ig-form') {
@@ -636,6 +534,8 @@ export default {
         })
       }
     }
+
+    this.$forceUpdate()
   },
   computed: {
     properties() {
@@ -656,12 +556,16 @@ export default {
       return null
     },
     imageSrc() {
-      let el = this.$refs.imageField
       if (this.value.match(/png|jpg|jpeg|gif/)) {
         if (this.value.match(/\$\$/)) {
           let serviceName = this.value.match(/\$\$service\((.*?)\)\/(.*)/)[1]
           if (this.$services[serviceName]) {
-            return this.$utils.fileUrl(this.value, 'assets/icons/cube.png', el)
+            (async () => {
+              await this.$utils.waitForProperty(this.$refs, 'imageField')
+              let el = this.$refs.imageField
+              this.$utils.fileUrl(this.value, 'assets/icons/cube.png', el)
+            })()
+            return ''
           } else {
             return 'assets/icons/cube.png'
           }
@@ -709,10 +613,6 @@ export default {
 .ig-form-next-header--text {
   margin: 16px 0px;
   font-weight: bold;
-}
-
-.ig-form-next-header--text:editable {
-  color: gainsboro;
 }
 
 .ig-form-next-header--actions {

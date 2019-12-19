@@ -131,6 +131,12 @@
       "items": {
         "title": "Input",
         "type": "object",
+        "_meta": {
+          "type": null,
+          "i18n": {
+            "Input": [ "Entrée", "Entrada" ]
+          }
+        },
         "properties": {
           "name": {
             "title": "Name",
@@ -174,12 +180,6 @@
                 "Method": [ "Méthode", "Método" ]
               }
             }
-          }
-        },
-        "_meta": {
-          "type": null,
-          "i18n": {
-            "Input": [ "Entrée", "Entrada" ]
           }
         }
       }

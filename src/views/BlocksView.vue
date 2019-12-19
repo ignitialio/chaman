@@ -1,6 +1,9 @@
 <template>
   <div class="blocks-layout">
     <div class="blocks-left">
+      <v-progress-linear v-if="loading"
+        indeterminate class="blocks-progress-bar"></v-progress-linear>
+
       <div class="blocks-search">
         <v-text-field id="blocks-search"
           v-model="search" :label="$t('Search')" dense flat
@@ -9,7 +12,10 @@
       </div>
 
       <v-list class="blocks-list">
-        <v-list-item v-for="block in blocks" :key="block.name">
+        <v-list-item v-for="block in blocks" :key="block.id"
+          @click="handleSelect(block)"
+          class="blocks-item"
+          :class="{ 'selected': selected === block }">
           <v-list-item-avatar>
             <img :id="'icon_' + block.id" :src="icon(block)" alt=""/>
           </v-list-item-avatar>
@@ -19,6 +25,12 @@
             </v-list-item-title>
             <v-list-item-subtitle v-text="block.description"></v-list-item-subtitle>
           </v-list-item-content>
+
+          <v-list-item-action>
+            <v-btn icon @click.stop="handleDelete(block)">
+              <v-icon color='red darken-1'>clear</v-icon>
+            </v-btn>
+          </v-list-item-action>
         </v-list-item>
       </v-list>
 
@@ -51,7 +63,8 @@ export default {
       blocks: [],
       search: '',
       selected: null,
-      schema: null
+      schema: null,
+      loading: false
     }
   },
   watch: {
@@ -79,17 +92,24 @@ export default {
 
         this.$forceUpdate()
       }
+    },
+    search: function(val) {
+      this.update()
     }
   },
-  components: {
-
-  },
-  computed: {},
   methods: {
     update() {
+      this.loading = true
+
       this.$db.collection('blocks').then(blocksCollection => {
         blocksCollection.dFind({}).then(async docs => {
-          this.blocks = docs
+          if (this.search !== '' && this.search.length > 2) {
+            this.blocks =
+              filter(docs, e =>
+                (e.name.toLowerCase() + ' ' + e.description.toLowerCase()).match(this.search.toLowerCase()))
+          } else {
+            this.blocks = docs
+          }
 
           // clean up services instances when no associated block
           for (let service in this.$services.servicesDico) {
@@ -107,8 +127,14 @@ export default {
               !!err
             }
           }
+
+          this.loading = false
         }).catch(err => console.log(err))
       }).catch(err => console.log(err))
+    },
+    handleSelect(block) {
+      this.selected = block
+      console.log($j(block))
     },
     handleAdd() {
       this.selected = {
@@ -209,6 +235,7 @@ export default {
 .blocks-list {
   width: 100%;
   height: calc(100% - 96px);
+  overflow-y: auto;
 }
 
 .blocks-button--add {
@@ -232,5 +259,15 @@ export default {
   margin: 32px 0;
   font-weight: bold;
   border-bottom: 1px solid gainsboro;
+}
+
+.blocks-item.selected {
+  background-color: rgba(0, 191, 255, 0.05);
+  border-bottom: 1px solid deepskyblue;
+}
+
+.blocks-progress-bar {
+  position: absolute;
+  width: 100%;
 }
 </style>
