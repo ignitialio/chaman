@@ -9,19 +9,19 @@
       centered grow>
       <v-tabs-slider></v-tabs-slider>
 
-      <v-tab v-for="(family, index) in families" :key="index"
-        :href="`#tab-${family}`">
-        {{ family }}
+      <v-tab v-for="(type, index) in types" :key="index"
+        :href="`#tab-${type}`">
+        {{ $t(type) }}
       </v-tab>
 
-      <v-tab-item v-for="(family, index) in families" :key="index"
-        :value="'tab-' + family">
+      <v-tab-item v-for="(type, index) in types" :key="index"
+        :value="'tab-' + type">
         <v-list>
-          <v-list-item v-for="block in blocksByFamily(family)"
+          <v-list-item v-for="block in blocksByType(type)"
             :data-block="JSON.stringify(block)"
             :key="block.name" draggable @dragstart="handleDragStart">
-            <v-list-item-avatar>
-              <v-img :src="$utils.fileUrl(block.icon)" alt=""></v-img>
+            <v-list-item-avatar @hook:mounted="icon(block)">
+              <img :draggable="false" :src="block.icon" alt=""/>
             </v-list-item-avatar>
 
             <v-list-item-content>
@@ -37,8 +37,10 @@
 </template>
 
 <script>
-import * as d3 from 'd3'
-import _ from 'lodash'
+import filter from 'lodash/filter'
+import find from 'lodash/find'
+import sortBy from 'lodash/sortBy'
+import values from 'lodash/values'
 
 export default {
   name: 'ig-workflow-palette',
@@ -52,31 +54,71 @@ export default {
       tab: null,
       hidden: true,
       blocks: null,
-      families: [ 'Sources', 'Processings', 'Widgets' ]
+      types: [ 'Source', 'Processing', 'Destination' ]
     }
   },
   watch: {
   },
   methods: {
-    blocksByFamily(family) {
-      return _.filter(this.blocks, e => {
-        return e.family === family
+    async update() {
+      this.services = sortBy(values(this.$services.servicesDico), [ 'name' ])
+
+      for (let i = 0; i < this.services.length; i++) {
+        try {
+          await this.$services.waitForService(this.services[i].name)
+          let options = this.$services.servicesDico[this.services[i].name].options
+          let workflow
+          if (options) {
+            workflow = options.workflow
+          }
+
+          if (workflow) {
+            this.blocks = this.blocks || []
+            if (!find(this.blocks, e => e.name === this.services[i].name)) {
+              this.blocks.push({
+                name: this.services[i].name,
+                types: workflow.types,
+                title: options.description.title,
+                description: options.description.info,
+                icon: options.description.icon,
+                inputs: workflow.inputs,
+                outputs: workflow.outputs
+              })
+            }
+          }
+        } catch (err) {
+          console.log(err)
+        }
+      }
+
+      this.$forceUpdate()
+    },
+    onServiceUp(service) {
+      this.update()
+    },
+    onServiceDown(service) {
+      this.update()
+      if (this.selected && service === this.selected.name) {
+        this.selected = null
+      }
+    },
+    blocksByType(type) {
+      return filter(this.blocks, e => {
+        return e.types.indexOf(type) !== -1
       })
     },
     handleDragStart(event) {
       let block = JSON.parse(event.srcElement.dataset.block)
 
       event.dataTransfer
-       .setData('text/plain', event.srcElement.dataset.block)
+        .setData('text/plain', event.srcElement.dataset.block)
 
-      let img = document.createElement('img')
-      img.src = this.$utils.fileUrl(block.icon)
-      img.style.maxWidth = '100px'
-      img.style.maxHeight = '100px'
-      event.dataTransfer.setDragImage(img, 64, 64)
+      let img = new Image()
+      img.src = block.icon
+      event.dataTransfer.setDragImage(img, 32, 32)
     },
     handleDeleteInput(name) {
-      this.block.inputs = _.filter(this.block.inputs, e => {
+      this.block.inputs = filter(this.block.inputs, e => {
         return e.name !== name
       })
     },
@@ -87,7 +129,7 @@ export default {
       })
     },
     handleDeleteOutput(name) {
-      this.block.outputs = _.filter(this.block.inputs, e => {
+      this.block.outputs = filter(this.block.inputs, e => {
         return e.name !== name
       })
     },
@@ -96,17 +138,28 @@ export default {
         name: 'out_' + Math.random().toString(36).slice(2, 8),
         active: false
       })
+    },
+    icon(block) {
+      this.$utils.getImage(block.name, block.icon).then(data => {
+        block.icon = data
+      }).catch(err => console.log(err, block.name, block.icon))
     }
   },
   async mounted() {
-    try {
-      // await this.$utils.waitForProperty(this, 'scene')
-      d3.json('data/blocks.workflow.json').then(data => {
-        this.blocks = data
-      }).catch(err => { console.log(err) })
-    } catch (err) {
-      console.log(err)
+    // listeners
+    this._listeners = {
+      onServiceUp: this.onServiceUp.bind(this),
+      onServiceDown: this.onServiceDown.bind(this)
     }
+
+    this.$services.on('service:up', this._listeners.onServiceUp)
+    this.$services.on('service:down', this._listeners.onServiceDown)
+
+    this.update()
+  },
+  beforeDestroy() {
+    this.$services.off('service:up', this._listeners.onServiceUp)
+    this.$services.off('service:down', this._listeners.onServiceDown)
   }
 }
 </script>

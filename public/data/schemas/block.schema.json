@@ -35,7 +35,7 @@
       "enum": [
         "Source",
         "Processing",
-        "Widget"
+        "Destination"
       ],
       "_meta": {
         "type": null,
@@ -43,7 +43,7 @@
           "Type": [ "Type", "Tipo" ],
           "Source": [ "Source", "Fuente" ],
           "Processing": [ "Traitement", "Tratamiento" ],
-          "Widget": [ "Visualisation", "Visualización" ]
+          "Destination": [ "Destination", "Destinación" ]
         }
       }
     },
@@ -149,16 +149,16 @@
           "type": {
             "title": "Type",
             "type": "string",
-            "default": "Event",
+            "default": "event",
             "enum": [
-              "Event", "Remote call", "Stream"
+              "event", "rpc", "stream"
             ],
             "_meta": {
-              "type": null,
+              "type": "enum",
               "i18n": {
-                "Event": [ "Événement", "Evenimiento" ],
-                "Remote call": [ "Appel distant", "Llamada remota" ],
-                "Stream": [ "Flux", "Flujo" ]
+                "event": [ "événement", "evenimiento" ],
+                "rpc": [ "appel", "llamada" ],
+                "stream": [ "flux", "flujo" ]
               }
             }
           },
@@ -204,7 +204,7 @@
           {
             "jsonpath": "$.type",
             "condition": "neq",
-            "value": "Widget"
+            "value": "Destination"
           }
         ]
       },
@@ -223,16 +223,16 @@
           "type": {
             "title": "Type",
             "type": "string",
-            "default": "Event",
+            "default": "event",
             "enum": [
-              "Event", "Remote call", "Stream"
+              "event", "rpc", "stream"
             ],
             "_meta": {
-              "type": null,
+              "type": "enum",
               "i18n": {
-                "Event": [ "Événement", "Evenimiento" ],
-                "Remote call": [ "Appel distant", "Llamada remota" ],
-                "Stream": [ "Flux", "Flujo" ]
+                "event": [ "événement", "evenimiento" ],
+                "rpc": [ "appel", "llamada" ],
+                "stream": [ "flux", "flujo" ]
               }
             }
           },

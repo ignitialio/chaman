@@ -336,4 +336,13 @@ data:
   "Select item":
     - "Sélectionner l'item"
     - "Selectar el artículo"
+  "Source":
+    - "Source"
+    - "Fuenta"
+  "Processing":
+    - "Traitement"
+    - "Tratamiento"
+  "Destination":
+    - "Destination"
+    - "Destinación"
 _unified: true
