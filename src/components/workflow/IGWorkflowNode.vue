@@ -11,20 +11,20 @@
 
     <img class="wfnode-background" :src="node.icon"/>
 
-    <div class="wfnode-top">
+    <div class="wfnode-top" :draggable="false">
       <v-icon class="wfnode-icon" @click="handleSettings">settings</v-icon>
       <ig-btn-confirm class="wfnode-icon delete"
-        small flat icon="delete_forever"
+        small flat icon="delete_forever" color="red"
         @mouseup.prevent.stop=""
         @mousedown.prevent.stop=""
         @click.prevent.stop="handleDelete"></ig-btn-confirm>
     </div>
 
-    <div class="wfnode-bottom">
+    <div class="wfnode-bottom" :draggable="false">
       <div class="wfnode-title" :title="node.title">{{ node.title }}</div>
     </div>
 
-    <div class="wfnode-inputs">
+    <div class="wfnode-inputs" :draggable="false">
       <div v-for="(slot, index) in node.inputs" :key="index"
         :ref="'input_' + index" class="wfnode-slot"
         :data-parent="node.id" :data-index="index"
@@ -36,7 +36,7 @@
       </div>
     </div>
 
-    <div class="wfnode-outputs">
+    <div class="wfnode-outputs" :draggable="false">
       <div v-for="(slot, index) in node.outputs" :key="index"
         :ref="'output_' + index" class="wfnode-slot"
         :data-parent="node.id" :data-index="index"
@@ -262,10 +262,6 @@ $slotNotConnectedColor: orange;
     height: 64px;
   }
 
-  .wfnode-icon {
-    cursor: default;
-  }
-
   .wfnode-top {
     width: 100%;
     position: absolute;
@@ -286,7 +282,7 @@ $slotNotConnectedColor: orange;
     }
 
     .wfnode-icon {
-      opacity: 0.6;
+      opacity: 0.4;
       color: gainsboro;
       cursor: pointer;
       width: 24px;
@@ -295,11 +291,6 @@ $slotNotConnectedColor: orange;
 
     .wfnode-icon:hover {
       color: dodgerblue;
-      opacity: 1;
-    }
-
-    .wfnode-icon.delete:hover {
-      color: tomato;
       opacity: 1;
     }
   }

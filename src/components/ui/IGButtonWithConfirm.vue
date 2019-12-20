@@ -1,13 +1,19 @@
 <template>
-  <v-btn :id="id" :text="text" :icon="!!icon"
-    :small="small" :absolute="absolute" :color="color"
-    @click.stop.prevent="handleClick">
-    <v-icon v-if="icon"
+  <div :id="id" class="butwithcfm-layout"
+    :class="{ 'absolute': absolute, 'isIcon': icon }" :color="color">
+    <v-icon v-if="icon" :color="color"
       @mouseup.prevent.stop="handleMouseUp"
       @mousedown.prevent.stop="handleMouseDown"
       @click.prevent.stop="handleClick">{{ icon }}</v-icon>
-    <div v-else>{{name}}</div>
-  </v-btn>
+
+    <v-btn v-else :id="id" :text="text"
+      :small="small" :color="color"
+      @mouseup.prevent.stop="handleMouseUp"
+      @mousedown.prevent.stop="handleMouseDown"
+      @click.stop.prevent="handleClick">
+      {{name}}
+    </v-btn>
+  </div>
 </template>
 
 <script>
@@ -58,4 +64,18 @@ export default {
 </script>
 
 <style scoped>
+.butwithcfm-layout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.butwithcfm-layout.absolute {
+  position: absolute;
+}
+
+.butwithcfm-layout.isIcon {
+  padding: 2px;
+  border-radius: 50%;
+}
 </style>
