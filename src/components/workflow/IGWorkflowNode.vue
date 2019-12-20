@@ -1,6 +1,5 @@
 <template>
   <div v-if="node" :id="id" draggable
-    :style="'background-image: url(' +  this.$utils.fileUrl(this.node.icon) + ');'"
     class="wfnode-layout"
     :class="{
       'sink': node.family === 'Sources',
@@ -9,6 +8,9 @@
     }"
     @dragstart="handleDragStart"
     @dragend="handleDragEnd">
+
+    <img class="wfnode-background" :src="node.icon"/>
+
     <div class="wfnode-top">
       <v-icon class="wfnode-icon" @click="handleSettings">settings</v-icon>
       <ig-btn-confirm class="wfnode-icon delete"
@@ -252,6 +254,12 @@ $slotNotConnectedColor: orange;
 
   .theme--dark &.selected {
     border: $nodeBorder solid $selectedNodeBorderColor;
+  }
+
+  .wfnode-background {
+    position: absolute;
+    width: 64px;
+    height: 64px;
   }
 
   .wfnode-icon {
