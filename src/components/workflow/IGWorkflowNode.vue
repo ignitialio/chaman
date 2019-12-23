@@ -68,7 +68,7 @@
             class="wfnode-section">{{ $t('Options') }}</div>
 
           <component v-if="node && node.service && $services[node.service]"
-            :is="node.service"
+            :is="node.service" :serviceOptions="node.options"
             :defaultMethod="node.type === 'Source' && node.outputs.length === 1 ? node.outputs[0].method : null"/>
         </v-card-text>
       </v-card>
@@ -387,11 +387,10 @@ $slotNotConnectedColor: orange;
 
     .wfnode-section {
       width: 100%;
-      margin: 16px 0;
+      margin: 32px 0;
       padding-left: 8px;
-      background-color: rgba(0, 0, 0, 0.1);
-      border-top: 1px solid dimgray;
-      border-bottom: 1px solid dimgray;
+      font-weight: bold;
+      border-bottom: 1px solid dodgerblue;
     }
 
     .wfnode-form {

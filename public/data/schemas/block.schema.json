@@ -39,18 +39,31 @@
         }
       }
     },
-    "type": {
-      "title": "Type",
-      "type": "string",
-      "enum": [
-        "Source",
-        "Processing",
-        "Destination"
-      ],
+    "types": {
+      "title": "Types",
+      "type": "array",
+      "items": {
+        "title": "Type",
+        "type": "string",
+        "enum": [
+          "Source",
+          "Processing",
+          "Destination"
+        ],
+        "_meta": {
+          "type": null,
+          "i18n": {
+            "Type": [ "Type", "Tipo" ],
+            "Source": [ "Source", "Fuente" ],
+            "Processing": [ "Traitement", "Tratamiento" ],
+            "Destination": [ "Destination", "Destinación" ]
+          }
+        }
+      },
       "_meta": {
         "type": null,
         "i18n": {
-          "Type": [ "Type", "Tipo" ],
+          "Types": [ "Types", "Tipos" ],
           "Source": [ "Source", "Fuente" ],
           "Processing": [ "Traitement", "Tratamiento" ],
           "Destination": [ "Destination", "Destinación" ]

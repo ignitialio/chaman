@@ -77,12 +77,15 @@ export default {
             if (!find(this.blocks, e => e.name === this.services[i].name)) {
               this.blocks.push({
                 name: this.services[i].name,
-                types: workflow.types,
+                service: this.services[i].name,
+                instance: '',
                 label: options.description.title,
+                types: workflow.types,
                 description: options.description.info,
                 icon: options.description.icon,
                 inputs: workflow.inputs,
-                outputs: workflow.outputs
+                outputs: workflow.outputs,
+                options: {}
               })
             }
           }

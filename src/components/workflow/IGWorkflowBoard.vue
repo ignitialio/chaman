@@ -137,7 +137,7 @@ export default {
     handleNodeDragOver(event) {
       event.preventDefault()
     },
-    handleNodeDrop(event) {
+    async handleNodeDrop(event) {
       if (event.dataTransfer.getData('text/plain')) {
         let node = JSON.parse(event.dataTransfer.getData('text/plain'))
 
@@ -158,12 +158,14 @@ export default {
 
           node = { ...node, ...helpers}
           // copy schema for UI generation and generate empty data
-          node.optionsSchema = {
-            type: 'object',
-            properties: _.cloneDeep(node.options)
-          }
 
-          node.options = this.$utils.generateDataFormJSONSchema(node.optionsSchema).json
+          try {
+            await this.$services[node.service].addInstance(helpers.id)
+            node.instance = helpers.id
+          } catch (err) {
+            // silently fails: no multinstance
+            console.log(err, 'no multiinstance for service [%s]', val)
+          }
 
           // console.log($j(node))
           this.nodes.push(node)

@@ -44,7 +44,6 @@ export default {
   },
   mounted() {
     this.text = this.value
-    console.log(this.editing, this.text)
   }
 }
 </script>
