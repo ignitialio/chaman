@@ -9,7 +9,7 @@
     @dragstart="handleDragStart"
     @dragend="handleDragEnd">
 
-    <img class="wfnode-background" :src="node.icon"/>
+    <img class="wfnode-background" :draggable="false" :src="node.icon"/>
 
     <div class="wfnode-top" :draggable="false">
       <v-icon class="wfnode-icon" @click="handleSettings">settings</v-icon>

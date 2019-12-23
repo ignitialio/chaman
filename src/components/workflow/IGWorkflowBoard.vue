@@ -52,7 +52,7 @@ export default {
       nodes: [],
       connectors: [],
       tempConnector: null,
-      scale: 0.5
+      scale: 1
     }
   },
   watch: {
