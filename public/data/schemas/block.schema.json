@@ -29,6 +29,16 @@
         }
       }
     },
+    "label": {
+      "title": "Label",
+      "type": "string",
+      "_meta": {
+        "type": null,
+        "i18n": {
+          "Label": [ "Étiquette", "Etiqueta" ]
+        }
+      }
+    },
     "type": {
       "title": "Type",
       "type": "string",

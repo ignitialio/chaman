@@ -38,7 +38,7 @@ export default {
       Vue.component('ig-color-picker', IGColorPicker)
       Vue.component('ig-json-picker', IGJSONPicker)
       Vue.component('ig-image-based-picker', IGImageBasedPicker)
-      Vue.component('ig-label', IGEditableLabel)
+      Vue.component('ig-editable-label', IGEditableLabel)
       Vue.component('ig-img-selector', IGImageSelector)
       Vue.component('ig-dialog', IGDialog)
 

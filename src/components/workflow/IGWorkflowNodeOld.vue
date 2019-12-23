@@ -2,9 +2,9 @@
   <div v-if="node" :id="id" draggable
     class="wfnode-layout"
     :class="{
-      'sink': node.types.indexOf('Source') !== -1,
-      'processing': node.types.indexOf('Processing') !== -1,
-      'widget': node.types.indexOf('Destination') !== -1
+      'sink': node.family === 'Sources',
+      'processing': node.family === 'Processings',
+      'widget': node.family === 'Widgets'
     }"
     @dragstart="handleDragStart"
     @dragend="handleDragEnd">
@@ -21,7 +21,7 @@
     </div>
 
     <div class="wfnode-bottom" :draggable="false">
-      <ig-editable-label class="wfnode-title" v-model="node.label"/>
+      <div class="wfnode-title" :title="node.title">{{ node.title }}</div>
     </div>
 
     <div class="wfnode-inputs" :draggable="false">
@@ -54,22 +54,23 @@
           <v-btn icon dark @click.native="settingsDialog = false">
             <v-icon>close</v-icon>
           </v-btn>
-          <v-toolbar-title>{{ $t('Node settings') }} - {{ node.label }}</v-toolbar-title>
+          <v-toolbar-title>{{ $t('Node settings') }} - {{ node.title }}</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-toolbar-items>
           </v-toolbar-items>
         </v-toolbar>
 
         <v-card-text class="wfnode-dialog-content">
-          <ig-form v-if="node && blockSchema" class="wfnode-form"
-            v-model="node" :schema="blockSchema" :root="node"/>
+          <v-text-field v-model="node.id" :label="$t('Id')"></v-text-field>
+          <v-text-field v-model="node.title" :label="$t('Title')"></v-text-field>
+          <v-text-field v-model="node.description" :label="$t('Description')"></v-text-field>
+          <v-select v-if="families" :label="$t('Family')"
+            :items="families" v-model="node.family"></v-select>
 
-          <div v-if="node && node.service"
-            class="wfnode-section">{{ $t('Options') }}</div>
+          <h3 class="wfnode-section">{{ $t('Options') }}</h3>
 
-          <component v-if="node && node.service && $services[node.service]"
-            :is="node.service"
-            :defaultMethod="node.type === 'Source' && node.outputs.length === 1 ? node.outputs[0].method : null"/>
+          <ig-form v-if="node.optionsSchema" class="wfnode-form"
+            v-model="node.options" :schema="node.optionsSchema"/>
         </v-card-text>
       </v-card>
     </ig-dialog>
@@ -94,8 +95,8 @@ export default {
   data: () => {
     return {
       node: null,
-      blockSchema: null,
-      settingsDialog: false
+      settingsDialog: false,
+      families: null
     }
   },
   watch: {
@@ -193,11 +194,16 @@ export default {
     this.$el.style.left = this.node.geometry.x + 'px'
     this.$el.style.top = this.node.geometry.y + 'px'
 
-    fetch('data/schemas/block.schema.json').then(function(response) {
-      return response.json()
-    }).then(data => {
-      this.blockSchema = data
-    }).catch(err => console.log(err))
+    this.families = [{
+      value: 'Sources',
+      text: this.$t('Sources')
+    }, {
+      value: 'Processings',
+      text: this.$t('Processings')
+    },{
+      value: 'Widgets',
+      text: this.$t('Widgets')
+    }]
   },
   beforeDestroy () {
   }
@@ -392,10 +398,6 @@ $slotNotConnectedColor: orange;
       background-color: rgba(0, 0, 0, 0.1);
       border-top: 1px solid dimgray;
       border-bottom: 1px solid dimgray;
-    }
-
-    .wfnode-form {
-      height: auto!important;
     }
   }
 }

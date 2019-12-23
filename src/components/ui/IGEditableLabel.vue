@@ -11,7 +11,6 @@
 
 <script>
 import * as d3 from 'd3'
-import _ from 'lodash'
 
 export default {
   props: {
@@ -45,6 +44,7 @@ export default {
   },
   mounted() {
     this.text = this.value
+    console.log(this.editing, this.text)
   }
 }
 </script>

@@ -140,6 +140,7 @@ export default {
       this.selected = {
         id: this.$utils.uuid(),
         name: '',
+        label: '',
         service: '',
         instance: '',
         type: 'Processing',

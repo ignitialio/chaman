@@ -25,7 +25,7 @@
             </v-list-item-avatar>
 
             <v-list-item-content>
-              <v-list-item-title v-text="block.title">
+              <v-list-item-title v-text="block.label">
               </v-list-item-title>
               <v-list-item-subtitle v-text="block.description"></v-list-item-subtitle>
             </v-list-item-content>
@@ -78,7 +78,7 @@ export default {
               this.blocks.push({
                 name: this.services[i].name,
                 types: workflow.types,
-                title: options.description.title,
+                label: options.description.title,
                 description: options.description.info,
                 icon: options.description.icon,
                 inputs: workflow.inputs,

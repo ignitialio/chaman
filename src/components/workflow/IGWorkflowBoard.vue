@@ -100,6 +100,7 @@ export default {
       this.nodes = data.nodes
 
       for (let n of this.nodes) {
+        if (!n.outputs) continue
         for (let o = 0; o < n.outputs.length; o++) {
           let origin = {
             id: n.id,
@@ -147,7 +148,7 @@ export default {
         } else {
           // that's a new node
           let helpers = {
-            id: 'node_' + this.$utils.uuid(),
+            id: this.$utils.uuid(),
             selected: false,
             geometry: {
               x: event.x - 48,
