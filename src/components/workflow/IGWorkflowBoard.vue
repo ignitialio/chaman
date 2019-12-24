@@ -20,17 +20,21 @@
 
     <ig-workworkflow-node v-for="(node, index) in nodes" :key="node.id"
       :ref="node.id"
-      @position="handleNodePostion"
+      @position="handleNodePosition"
       @delete="handleNodeDelete"
       @connectorStart="handleConnectorStart"
       @connectorEnd="handleConnectorEnd"
-      :data.sync="node" :scale="scale"/>
+      :data="node" @update:data="handleNodeUpdate(index, $event)" :scale="scale"/>
   </div>
 </template>
 
 <script>
-import * as d3 from 'd3'
-import _ from 'lodash'
+import find from 'lodash/find'
+import findIndex from 'lodash/findIndex'
+import filter from 'lodash/filter'
+import range from 'lodash/range'
+import cloneDeep from 'lodash/cloneDeep'
+import includes from 'lodash/includes'
 
 import IGWorkflowNode from './IGWorkflowNode.vue'
 import IGWorkflowConnector from './IGWorkflowConnector.vue'
@@ -86,20 +90,26 @@ export default {
         await this.$utils.waitForProperty(this.$refs,
           'connector_' + (this.connectors.length - 1))
 
-        let node = this.nodes[_.findIndex(this.nodes, e => e.id === origin.id)]
+        let node = this.nodes[findIndex(this.nodes, e => e.id === origin.id)]
         this.handleConnectorUpdate(node.geometry, connector, 'origin')
-        node = this.nodes[_.findIndex(this.nodes, e => e.id === destination.id)]
+        node = this.nodes[findIndex(this.nodes, e => e.id === destination.id)]
         this.handleConnectorUpdate(node.geometry, connector, 'destination')
       } catch (err) {
         console.log('connector add failed', err)
       }
     },
     importWorkflow(data) {
-      // console.log($j(data))
+      console.log($j(data))
       this.connectors = []
       this.nodes = data.nodes
 
       for (let n of this.nodes) {
+        this.$services[n.service].addInstance(n.instance).then(() => {
+          console.log('instance created for node [%s].[%s]', n.label, n.id)
+        }).catch(err => {
+          console.log(err)
+        })
+
         if (!n.outputs) continue
         for (let o = 0; o < n.outputs.length; o++) {
           let origin = {
@@ -113,7 +123,7 @@ export default {
           }
 
           for (let destIndex of n.outputs[o].destinations) {
-            let destNode = _.find(this.nodes, e => destIndex === e.id)
+            let destNode = find(this.nodes, e => destIndex === e.id)
             let destSlotIndex
 
             for (let i = 0; i < destNode.inputs.length; i++) {
@@ -137,13 +147,23 @@ export default {
     handleNodeDragOver(event) {
       event.preventDefault()
     },
+    handleNodeUpdate(index, val) {
+      this.nodes[index] = val
+      console.log($j(this.nodes[index]))
+      this.$emit('update:data', {
+        ...this.data,
+        ...{
+          nodes: this.nodes
+        }
+      })
+    },
     async handleNodeDrop(event) {
       if (event.dataTransfer.getData('text/plain')) {
         let node = JSON.parse(event.dataTransfer.getData('text/plain'))
 
         if (node.id) {
-          let index = _.findIndex(this.nodes, e => e.id === node.id)
-          this.nodes[index] = _.cloneDeep(this.nodes[index])
+          let index = findIndex(this.nodes, e => e.id === node.id)
+          this.nodes[index] = cloneDeep(this.nodes[index])
           // console.log(index, this.nodes[index])
         } else {
           // that's a new node
@@ -179,7 +199,7 @@ export default {
         }
       })
     },
-    handleNodePostion(position, node) {
+    handleNodePosition(position, node) {
       for (let connector of this.connectors) {
         if (connector.origin.id === node.id) {
           this.handleConnectorUpdate(position, connector, 'origin')
@@ -190,13 +210,13 @@ export default {
         }
       }
 
-      let index = _.findIndex(this.nodes, e => e.id === node.id)
+      let index = findIndex(this.nodes, e => e.id === node.id)
       this.nodes[index] = node
     },
     handleRemoveConnector(index) {
       let connector = this.connectors[index]
-      let dest = _.find(this.nodes, e => e.id === connector.destination.id)
-      let origin = _.find(this.nodes, e => e.id === connector.origin.id)
+      let dest = find(this.nodes, e => e.id === connector.destination.id)
+      let origin = find(this.nodes, e => e.id === connector.origin.id)
 
       for (let output of origin.outputs) {
         if (output.destinations) {
@@ -250,8 +270,8 @@ export default {
         connector.geometry.y2 = dy + bbSlot.height
       }
     },
-    handleNodeDelete(node) {
-      let index = _.findIndex(this.nodes, e => e.id === node.id)
+    async handleNodeDelete(node) {
+      let index = findIndex(this.nodes, e => e.id === node.id)
       this.nodes.splice(index, 1)
       let connectorsToRemove = []
 
@@ -262,10 +282,17 @@ export default {
         }
       }
 
-      this.connectors = _.filter(this.connectors,
-        (e, i) => !_.includes(connectorsToRemove, i))
+      this.connectors = filter(this.connectors,
+        (e, i) => !includes(connectorsToRemove, i))
 
-      console.log(this.nodes[index].id, $j(this.connectors))
+      try {
+        await this.$services[node.service].removeInstance(node.instance)
+      } catch (err) {
+        // silently fails: no multinstance
+        console.log(err, 'no multiinstance for service [%s]', val)
+      }
+
+      console.log('deleted', node.id, $j(this.connectors))
     },
     handleConnectorStart(nodeId, nodeEl, index, startPosition) {
       this.tempConnector = {
@@ -309,7 +336,7 @@ export default {
         slot: index
       }
 
-      let connector = _.cloneDeep(this.tempConnector)
+      let connector = cloneDeep(this.tempConnector)
       this.connectors.push(connector)
 
       let node
@@ -390,12 +417,12 @@ export default {
     }
   },
   mounted() {
-    this.workflow = _.cloneDeep(this.data)
+    this.workflow = cloneDeep(this.data)
 
     let grid = ''
     let bb = this.$el.getBoundingClientRect()
-    let aX = _.range(0, bb.width, this.data.gridSize || 40)
-    let aY = _.range(0, bb.height, this.data.gridSize || 40)
+    let aX = range(0, bb.width, this.data.gridSize || 40)
+    let aY = range(0, bb.height, this.data.gridSize || 40)
 
     for (let x of aX) {
       for (let y of aY) {

@@ -76,6 +76,7 @@ export default {
             this.blocks = this.blocks || []
             if (!find(this.blocks, e => e.name === this.services[i].name)) {
               this.blocks.push({
+                id: null,
                 name: this.services[i].name,
                 service: this.services[i].name,
                 instance: '',
@@ -85,7 +86,7 @@ export default {
                 icon: options.description.icon,
                 inputs: workflow.inputs,
                 outputs: workflow.outputs,
-                options: {}
+                options: null
               })
             }
           }

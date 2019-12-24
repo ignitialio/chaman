@@ -592,14 +592,12 @@ export default {
     this.$services.on('app:notification', message => {
       this.notification = message
       this.notificationSnack = true
-      console.log(message)
     })
 
     // progress bar events
     this.$services.on('app:progress:show', show => {
       this.showProgressBar = show
       this.$forceUpdate()
-      console.log('SHOW', show)
     })
 
     this.$services.on('app:progress', val => {

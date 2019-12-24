@@ -345,4 +345,10 @@ data:
   "Destination":
     - "Destination"
     - "Destinación"
+  "Creation done":
+    - "Création réalisée"
+    - "Creación completada"
+  "Creation failed":
+    - "Création échouée"
+    - "Creación fallida"
 _unified: true

@@ -62,13 +62,15 @@
 
         <v-card-text class="wfnode-dialog-content">
           <ig-form v-if="node && blockSchema" class="wfnode-form"
-            v-model="node" :schema="blockSchema" :root="node"/>
+            :value="node" @input="handleNode"
+            :schema="blockSchema" :root="node"/>
 
           <div v-if="node && node.service"
             class="wfnode-section">{{ $t('Options') }}</div>
 
           <component v-if="node && node.service && $services[node.service]"
-            :is="node.service" :serviceOptions="node.options"
+            :is="node.service" :options="node.options"
+            @update:options="handleOptions"
             :defaultMethod="node.type === 'Source' && node.outputs.length === 1 ? node.outputs[0].method : null"/>
         </v-card-text>
       </v-card>
@@ -118,6 +120,14 @@ export default {
     },
     handleSettings() {
       this.settingsDialog = true
+    },
+    handleNode(val) {
+      this.node = val
+      this.$emit('update:data', this.node)
+    },
+    handleOptions(val) {
+      this.node.options = val
+      this.$emit('update:data', this.node)
     },
     handleDelete() {
       this.$emit('delete', this.node)

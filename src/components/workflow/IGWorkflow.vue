@@ -68,10 +68,9 @@
               </v-list-item-content>
 
               <v-list-item-action>
-                <v-btn text small icon
-                  @click.prevent.stop="handleDeleteWorkflow(workflow)" color="error">
-                  <v-icon>clear</v-icon>
-                </v-btn>
+                <ig-btn-confirm class="ig-error"
+                  small text icon="clear" color="red"
+                  @click="handleDeleteWorkflow(workflow)"></ig-btn-confirm>
               </v-list-item-action>
             </v-list-item>
           </v-list>
@@ -111,7 +110,7 @@ export default {
   watch: {
     workflow: {
       handler: function(val) {
-        // console.log($j(val))
+        console.log($j(val))
       },
       deep: true
     }
@@ -170,9 +169,9 @@ export default {
           workflows.dPut(this.workflow).then(result => {
             console.log(result)
             this.workflow._id = result._id
-            this.$services.emit('app:notification', this.$t('Modification done'))
+            this.$services.emit('app:notification', this.$t('Creation done'))
           }).catch(err => {
-            this.$services.emit('app:notification', this.$t('Modification failed'))
+            this.$services.emit('app:notification', this.$t('Creation failed'))
             console.log(err)
           })
         }
