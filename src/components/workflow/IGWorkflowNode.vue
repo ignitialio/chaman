@@ -68,10 +68,33 @@
           <div v-if="node && node.service"
             class="wfnode-section">{{ $t('Options') }}</div>
 
-          <component v-if="node && node.service && $services[node.service]"
-            :is="node.service" :options="node.options"
-            @update:options="handleOptions"
-            :defaultMethod="node.type === 'Source' && node.outputs.length === 1 ? node.outputs[0].method : null"/>
+          <component class="wfnode-form"
+            v-if="node && node.service && $services[node.service]"
+            :is="node.service" :node="node" :options="node.options"
+            @update:options="handleOptions"/>
+
+
+          <div v-if="node && node.service"
+            class="wfnode-section">{{ $t('Test') }}</div>
+
+          <div class="wfnode-output--test header">
+            <div style="width: 200px">{{ $t('Name') }}</div>
+            <div style="width: 200px">{{ $t('Type') }}</div>
+            <div style="width: 200px">{{ $t('Method') }}</div>
+            <div>{{ $t('Execute') }}</div>
+          </div>
+
+          <div class="wfnode-output--test" v-for="output in node.outputs">
+            <div style="width: 200px">{{ output.name }}</div>
+            <div style="width: 200px">{{ output.type }}</div>
+            <div style="width: 200px">{{ output.method }}</div>
+            <v-btn icon text small color="blue lighten-1"
+              @click="handleTestOutput(output)">
+              <v-icon>play_arrow</v-icon>
+            </v-btn>
+          </div>
+
+          <ig-json-viewer class="wfnode-testzone" :data="testResult"/>
         </v-card-text>
       </v-card>
     </ig-dialog>
@@ -97,7 +120,8 @@ export default {
     return {
       node: null,
       blockSchema: null,
-      settingsDialog: false
+      settingsDialog: false,
+      testResult: null
     }
   },
   watch: {
@@ -112,6 +136,18 @@ export default {
     }
   },
   methods: {
+    handleTestOutput(output) {
+      switch (output.type) {
+        case 'rpc':
+          this.$services[this.node.service]
+            .callEventuallyBoundMethod(output.method).then(result => {
+              this.testResult = result
+            }).catch(err => {
+              this.testResult = err.toString()
+            })
+          break
+      }
+    },
     // type = output | input
     getSlotElement(type, index) {
       if (this.$refs[type + '_' + index]) {
@@ -393,6 +429,7 @@ $slotNotConnectedColor: orange;
       width: 100%;
       padding: 16px 15% 0 15%;
       overflow-y: auto;
+      padding-bottom: 32px;
     }
 
     .wfnode-section {
@@ -405,6 +442,33 @@ $slotNotConnectedColor: orange;
 
     .wfnode-form {
       height: auto!important;
+    }
+
+    .wfnode-output--test {
+      margin: 2px 16px;
+      width: calc(100% - 32px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .wfnode-output--test.header {
+      background-color: rgba(0, 191, 255, 0.05);
+      border-bottom: 1px solid deepskyblue;
+      font-weight: bold;
+    }
+
+    .wfnode-testzone {
+      margin: 16px;
+      width: calc(100% - 32px);
+      height: 300px;
+      border: 1px solid gainsboro;
+      background-color: rgba(191, 191, 255, 0.05);
+      overflow-y: auto;
+
+      .wfnode-error {
+        color: red;
+      }
     }
   }
 }

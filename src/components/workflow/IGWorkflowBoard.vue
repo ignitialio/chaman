@@ -99,7 +99,6 @@ export default {
       }
     },
     importWorkflow(data) {
-      console.log($j(data))
       this.connectors = []
       this.nodes = data.nodes
 
@@ -149,7 +148,7 @@ export default {
     },
     handleNodeUpdate(index, val) {
       this.nodes[index] = val
-      console.log($j(this.nodes[index]))
+      // console.log($j(this.nodes[index]))
       this.$emit('update:data', {
         ...this.data,
         ...{

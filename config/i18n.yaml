@@ -351,4 +351,7 @@ data:
   "Creation failed":
     - "Création échouée"
     - "Creación fallida"
+  "Node settings":
+    - "Paramètres du nœud"
+    - "Configuraciones de nodo"
 _unified: true
