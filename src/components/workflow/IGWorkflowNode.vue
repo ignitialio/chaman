@@ -151,7 +151,7 @@ export default {
               this.testResult = result
               this.testing = false
             }).catch(err => {
-              this.testResult = err.toString()
+              this.testResult = { err: '' + err }
               this.testing = false
             })
           break
