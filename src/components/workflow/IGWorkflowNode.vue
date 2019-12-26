@@ -94,6 +94,9 @@
             </v-btn>
           </div>
 
+          <v-progress-linear :class="{ 'hidden': !testing }"
+            indeterminate class="wfnode-progress-bar"></v-progress-linear>
+
           <ig-json-viewer class="wfnode-testzone" :data="testResult"/>
         </v-card-text>
       </v-card>
@@ -121,6 +124,7 @@ export default {
       node: null,
       blockSchema: null,
       settingsDialog: false,
+      testing: false,
       testResult: null
     }
   },
@@ -137,13 +141,18 @@ export default {
   },
   methods: {
     handleTestOutput(output) {
+      this.testResult = undefined
+      this.testing = true
+
       switch (output.type) {
         case 'rpc':
           this.$services[this.node.service]
             .callEventuallyBoundMethod(output.method).then(result => {
               this.testResult = result
+              this.testing = false
             }).catch(err => {
               this.testResult = err.toString()
+              this.testing = false
             })
           break
       }
@@ -458,8 +467,17 @@ $slotNotConnectedColor: orange;
       font-weight: bold;
     }
 
+    .wfnode-progress-bar {
+      margin: 16px 16px 0 16px;
+      width: calc(100% - 32px);
+    }
+
+    .wfnode-progress-bar.hidden {
+      opacity: 0;
+    }
+
     .wfnode-testzone {
-      margin: 16px;
+      margin: 0 16px 16px 16px;
       width: calc(100% - 32px);
       height: 300px;
       border: 1px solid gainsboro;
