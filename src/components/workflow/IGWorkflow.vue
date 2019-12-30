@@ -30,7 +30,7 @@
       </v-btn>
     </v-speed-dial>
 
-    <ig-workflow-palette ref="toolsPalette" :families="families" :workflow="workflow"
+    <ig-workflow-palette ref="toolsPalette" :workflow="workflow"
       @blockType="blockType = $event">
     </ig-workflow-palette>
 
@@ -94,7 +94,6 @@ export default {
     return {
       id: 'workflow_' + Math.random().toString(36).slice(2, 10),
       workflowMenu: false,
-      families: {},
       titleEditing: false,
       workflow: {
         name: 'workflow_' + Math.random().toString(36).slice(2, 10),

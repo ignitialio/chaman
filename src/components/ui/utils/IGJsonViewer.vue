@@ -1,23 +1,20 @@
 <template>
-  <div class="json-viewer-layout">
-
-  </div>
+  <div class="json-viewer-layout"></div>
 </template>
 
 <script>
-import * as d3 from 'd3'
 import jsonPretty from 'json-pretty-html'
 
 export default {
-  name: 'ig-jsonviewer',
+  name: 'ig-json-viewer',
   props: [ 'data' ],
   watch: {
     data: function(val) {
-      d3.select(this.$el).html(jsonPretty(val))
+      this.$el.innerHTML = jsonPretty(val)
     }
   },
   mounted() {
-    d3.select(this.$el).html(jsonPretty(this.data))
+    this.$el.innerHTML = jsonPretty(this.data)
   }
 }
 </script>

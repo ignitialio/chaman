@@ -81,9 +81,9 @@ export default {
                 service: this.services[i].name,
                 instance: '',
                 label: options.description.title,
-                types: workflow.types,
                 description: options.description.info,
                 icon: options.description.icon,
+                types: workflow.types,
                 inputs: workflow.inputs,
                 outputs: workflow.outputs,
                 options: null
@@ -144,9 +144,11 @@ export default {
       })
     },
     icon(block) {
-      this.$utils.getImage(block.name, block.icon).then(data => {
-        block.icon = data
-      }).catch(err => console.log(err, block.name, block.icon))
+      if (!block.icon.match(/data/)) {
+        this.$utils.getImage(block.name, block.icon).then(data => {
+          block.icon = data
+        }).catch(err => console.log(err, block.name, block.icon))
+      }
     }
   },
   async mounted() {

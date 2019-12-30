@@ -3,9 +3,8 @@
     <input v-if="editing" class="el-input" :value="text"
       @focusout="editing = false" @change="handleUpdate"/>
     <div v-if="!editing" class="el-text no-text-selection"
-      @dblclick="handleDoubleClick">{{ text }}</div>
-    <i v-if="!editing" class="el-icon material-icons"
-      @click="handleEditing">edit</i>
+      @click="handleEditing"
+      @dblclick="handleDoubleClick" :title="text">{{ text }}</div>
   </div>
 </template>
 
@@ -71,6 +70,7 @@ export default {
 
 .el-text {
   flex: 1;
+  white-space: normal;
 }
 
 .el-icon {

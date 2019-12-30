@@ -347,19 +347,15 @@ $slotNotConnectedColor: orange;
   .wfnode-bottom {
     width: 100%;
     position: absolute;
-    bottom: -32px;
+    top: 100px;
     border-radius: 4px 4px 0 0;
-    display: flex;
-    align-items: center;
+    text-align: center;
 
     .wfnode-title {
       width: 100%;
       text-align: center;
       user-select: none;
       color: $titleColor;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow-x: hidden;
     }
   }
 
