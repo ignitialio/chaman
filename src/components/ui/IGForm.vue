@@ -28,7 +28,8 @@
         <v-switch inset
           v-else-if="schema.type === 'boolean'"
           :label="$t(schema.title || name)"
-          :value="value" @change="handleChange"></v-switch>
+          @hook:mounted="handleBooleanValue"
+          :value="booleanValue" @change="handleChange"></v-switch>
 
         <!-- Image field -->
         <div class="ig-form-hgroup"
@@ -266,10 +267,16 @@ export default {
       selectionDialog: false,
       error: false,
       /* populate selection list with helpers */
-      listFromFunctionItems: []
+      listFromFunctionItems: [],
+      /* bug on boolean value */
+      booleanValue: false
     }
   },
   methods: {
+    /* bug on v-switch */
+    handleBooleanValue() {
+      this.booleanValue = this.value
+    },
     _updateI18N(schema) {
       if (schema._meta && schema._meta.i18n) {
         this.$i18n.addTranslations(schema._meta.i18n)

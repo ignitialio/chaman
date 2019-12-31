@@ -173,6 +173,7 @@ export default {
     handleOptions(val) {
       this.node.options = val
       this.$emit('update:data', this.node)
+      console.log($j(this.node.options))
     },
     handleDelete() {
       this.$emit('delete', this.node)
