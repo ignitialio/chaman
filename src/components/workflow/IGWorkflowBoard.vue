@@ -103,9 +103,9 @@ export default {
       this.nodes = data.nodes
 
       for (let n of this.nodes) {
-        this.$services[n.service].addInstance(n.instance).then(() => {
+        this.$services[n.service].addInstance(n.instance)/*.then(() => {
           console.log('instance created for node [%s].[%s]', n.label, n.id)
-        }).catch(err => {
+        })*/.catch(err => {
           console.log(err)
         })
 

@@ -1,6 +1,6 @@
 <template>
   <div class="main-layout">
-    <ig-workflow class="main-workflow"></ig-workflow>
+    <ig-workflow class="main-workflow" @run="handleRun"></ig-workflow>
   </div>
 </template>
 
@@ -18,7 +18,71 @@ export default {
     'ig-workflow': IGWorkflow
   },
   computed: {},
-  methods: {},
+  methods: {
+    _getDestBindingEndpoint(source, destination) {
+      for (let node of this.workflow.nodes) {
+        if (node.id === destination) {
+          for (let input of node.inputs) {
+            for (let origin of input.origins) {
+              if (origin === source) {
+                return {
+                  service: node.service,
+                  method: input.method
+                }
+              }
+            }
+          }
+        }
+      }
+
+      return null
+    },
+    async handleRun(status, workflow) {
+      console.log('status', status)
+      this.workflow = workflow
+
+      for (let node of workflow.nodes) {
+        if (status) {
+          this.$services[node.service]
+            .workflowNodePreset(node).catch(err => console.log(err))
+        } else {
+          this.$services[node.service]
+            .workflowNodeClearPreset(node).catch(err => console.log(err))
+        }
+
+        if (!node.outputs) continue
+        for (let output of node.outputs) {
+          switch (output.type) {
+            case 'rpc':
+              if (!output.destinations) continue
+              for (let destination of output.destinations) {
+                let binding = this._getDestBindingEndpoint(node.id, destination)
+
+                if (status) {
+                  if (binding) {
+                    console.log(node.service, this.$services[node.service], output.method, binding)
+                    this.$services[node.service]
+                      .bindMethods(output.method,
+                        binding.service, binding.method).catch(err => {
+                          console.log('bind error', node.service, $j(output), err)
+                        })
+                  }
+                } else {
+                  if (binding) {
+                    this.$services[node.service]
+                      .unbindMethods(output.method,
+                        binding.service, binding.method).catch(err => {
+                          console.log('unbind error', node.service, $j(output), err)
+                        })
+                  }
+                }
+              }
+              break
+          }
+        }
+      }
+    }
+  },
   mounted() {
     // wait for login
     this.$services.waitForProperty(this.$store.state, 'user').then(async () => {

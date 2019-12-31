@@ -89,7 +89,17 @@
             <div style="width: 200px">{{ output.type }}</div>
             <div style="width: 200px">{{ output.method }}</div>
             <v-btn icon text small color="blue lighten-1"
-              @click="handleTestOutput(output)">
+              @click="handleTestIO(output)">
+              <v-icon>play_arrow</v-icon>
+            </v-btn>
+          </div>
+
+          <div class="wfnode-output--test" v-for="input in node.inputs">
+            <div style="width: 200px">{{ input.name }}</div>
+            <div style="width: 200px">{{ input.type }}</div>
+            <div style="width: 200px">{{ input.method }}</div>
+            <v-btn icon text small color="blue lighten-1"
+              @click="handleTestIO(input)">
               <v-icon>play_arrow</v-icon>
             </v-btn>
           </div>
@@ -140,14 +150,14 @@ export default {
     }
   },
   methods: {
-    handleTestOutput(output) {
+    handleTestIO(io) {
       this.testResult = undefined
       this.testing = true
 
-      switch (output.type) {
+      switch (io.type) {
         case 'rpc':
           this.$services[this.node.service]
-            .callEventuallyBoundMethod(output.method).then(result => {
+            .callEventuallyBoundMethod(io.method).then(result => {
               this.testResult = result
               this.testing = false
             }).catch(err => {
@@ -173,7 +183,6 @@ export default {
     handleOptions(val) {
       this.node.options = val
       this.$emit('update:data', this.node)
-      console.log($j(this.node.options))
     },
     handleDelete() {
       this.$emit('delete', this.node)

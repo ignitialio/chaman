@@ -44,6 +44,13 @@
         v-if="!titleEditing" @click="titleEditing = true">{{ workflow.name }}</div>
     </div>
 
+    <div class="workflow-runtime">
+      <v-btn icon text @click="handleRun">
+        <v-icon v-if="running" color="black">stop</v-icon>
+        <v-icon v-else color="blue lighten-1">play_arrow</v-icon>
+      </v-btn>
+    </div>
+
     <!-- Load workflows dialog -->
     <ig-dialog v-model="loadWorkflowDialog">
       <v-card class="workflow-dialog-card">
@@ -103,7 +110,8 @@ export default {
         nodes: []
       },
       workflows: [],
-      loadWorkflowDialog: false
+      loadWorkflowDialog: false,
+      running: false
     }
   },
   watch: {
@@ -119,6 +127,11 @@ export default {
     'ig-workflow-palette': IGWorkflowPalette
   },
   methods: {
+    handleRun() {
+      this.running = !this.running
+      this.$emit('run', this.running, this.workflow)
+      this.$services.emit('workflow:run', this.runnning, this.workflow)
+    },
     handleLoadWorkflowDialog() {
       this.$db.collection('workflows').then(workflows => {
         workflows.dFind({}).then(docs => {
@@ -254,6 +267,12 @@ export default {
   align-items: center;
   justify-content: center;
   color: dodgerblue;
+}
+
+.workflow-runtime {
+  position: absolute;
+  bottom: 8px;
+  left: 300px;
 }
 
 .workflow-dialog-card {
