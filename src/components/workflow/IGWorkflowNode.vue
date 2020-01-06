@@ -263,8 +263,21 @@ export default {
     }).then(data => {
       this.blockSchema = data
     }).catch(err => console.log(err))
+
+    // preset associated service as per workflow node configuration
+    this.$services.waitForService(this.node.service).then(nodeService => {
+      nodeService.workflowNodePreset(this.node).then(() => {
+        console.log(this.node.label, ' preset done')
+      }).catch(err => console.log(err))
+    }).catch(err => console.log(err))
   },
   beforeDestroy () {
+    // preset associated service as per workflow node configuration
+    this.$services.waitForService(this.node.service).then(nodeService => {
+      nodeService.workflowNodeClearPreset(this.node).then(() => {
+        console.log(this.node.label, ' preset cleareance')
+      }).catch(err => console.log(err))
+    }).catch(err => console.log(err))
   }
 }
 </script>
