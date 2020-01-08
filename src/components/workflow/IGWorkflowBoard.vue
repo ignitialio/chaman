@@ -24,7 +24,66 @@
       @delete="handleNodeDelete"
       @connectorStart="handleConnectorStart"
       @connectorEnd="handleConnectorEnd"
+      @widget="handleWidgetDisplay"
+      @settings="handleSettings"
       :data="node" @update:data="handleNodeUpdate(index, $event)" :scale="scale"/>
+
+    <!-- Node settings dialog -->
+    <ig-dialog v-if="selectedNode"
+      v-model="selectedNode" class="workflow-node-dialog"
+      :title="$t('Node settings') + ' - ' + selectedNode.label">
+      <div class="workflow-node-dialog-content">
+        <ig-form v-if="selectedNode && blockSchema" class="wfnode-form"
+          :value="selectedNode" @input="handleSelectNodeUpdate"
+          :schema="blockSchema" :root="selectedNode"/>
+
+        <div v-if="selectedNode && selectedNode.service"
+          class="wfnode-section">{{ $t('Options') }}</div>
+
+        <component class="wfnode-form"
+          v-if="selectedNode && selectedNode.service && $services[selectedNode.service]"
+          :is="selectedNode.service"
+          :node="selectedNode"
+          :options="selectedNode.options"
+          @update:options="handleOptions"/>
+
+
+        <div v-if="selectedNode && selectedNode.service"
+          class="wfnode-section">{{ $t('Test') }}</div>
+
+        <div class="wfnode-output--test header">
+          <div style="width: 200px">{{ $t('Name') }}</div>
+          <div style="width: 200px">{{ $t('Type') }}</div>
+          <div style="width: 200px">{{ $t('Method') }}</div>
+          <div>{{ $t('Execute') }}</div>
+        </div>
+
+        <div class="wfnode-output--test" v-for="output in selectedNode.outputs">
+          <div style="width: 200px">{{ output.name }}</div>
+          <div style="width: 200px">{{ output.type }}</div>
+          <div style="width: 200px">{{ output.method }}</div>
+          <v-btn icon text small color="blue lighten-1"
+            @click="handleTestIO(output)">
+            <v-icon>play_arrow</v-icon>
+          </v-btn>
+        </div>
+
+        <div class="wfnode-output--test" v-for="input in selectedNode.inputs">
+          <div style="width: 200px">{{ input.name }}</div>
+          <div style="width: 200px">{{ input.type }}</div>
+          <div style="width: 200px">{{ input.method }}</div>
+          <v-btn icon text small color="blue lighten-1"
+            @click="handleTestIO(input)">
+            <v-icon>play_arrow</v-icon>
+          </v-btn>
+        </div>
+
+        <v-progress-linear :class="{ 'hidden': !testing }"
+          indeterminate class="wfnode-progress-bar"></v-progress-linear>
+
+        <ig-json-viewer class="wfnode-testzone" :data="testResult"/>
+      </div>
+    </ig-dialog>
   </div>
 </template>
 
@@ -40,7 +99,7 @@ import IGWorkflowNode from './IGWorkflowNode.vue'
 import IGWorkflowConnector from './IGWorkflowConnector.vue'
 
 export default {
-  name: 'ig-workworkflow-board-board',
+  name: 'ig-workworkflow-board',
   components: {
     'ig-workworkflow-node': IGWorkflowNode,
     'ig-workworkflow-connector': IGWorkflowConnector
@@ -56,7 +115,11 @@ export default {
       nodes: [],
       connectors: [],
       tempConnector: null,
-      scale: 1
+      scale: 1,
+      selectedNode: null,
+      blockSchema: null,
+      testing: false,
+      testResult: null
     }
   },
   watch: {
@@ -413,9 +476,48 @@ export default {
     },
     handleEndPan(event) {
       this.panning = false
+    },
+    handleWidgetDisplay(node) {
+      this.$emit('widget', node)
+    },
+    handleTestIO(io) {
+      this.testResult = undefined
+      this.testing = true
+
+      switch (io.type) {
+        case 'rpc':
+          this.$services[this.selectedNode.service]
+            .callEventuallyBoundMethod(io.method).then(result => {
+              this.testResult = result
+              this.testing = false
+            }).catch(err => {
+              this.testResult = { err: '' + err }
+              this.testing = false
+            })
+          break
+      }
+    },
+    handleSelectNodeUpdate(val) {
+      this.selectedNode = val
+      let idx = find(this.nodes, e => e.id === this.selectedNode.id)
+      this.handleNodeUpdate(idx, this.selectedNode)
+    },
+    handleOptions(val) {
+      this.selectedNode.options = val
+      let idx = find(this.nodes, e => e.id === this.selectedNode.id)
+      this.handleNodeUpdate(idx, this.selectedNode)
+    },
+    handleSettings(node) {
+      this.selectedNode = node
     }
   },
   mounted() {
+    fetch('data/schemas/block.schema.json').then(function(response) {
+      return response.json()
+    }).then(data => {
+      this.blockSchema = data
+    }).catch(err => console.log(err))
+
     this.workflow = cloneDeep(this.data)
 
     let grid = ''
@@ -446,7 +548,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .workflow-board {
   position: absolute;
   top: 0;
@@ -484,5 +586,59 @@ export default {
   fill: none;
   stroke: grey;
   stroke-width: 2;
+}
+
+.workflow-node-dialog {
+  .workflow-node-dialog-content {
+    padding: 16px 15% 0 15%;
+
+    .wfnode-section {
+      width: 100%;
+      margin: 32px 0;
+      padding-left: 8px;
+      font-weight: bold;
+      border-bottom: 1px solid dodgerblue;
+    }
+
+    .wfnode-form {
+      height: auto!important;
+    }
+
+    .wfnode-output--test {
+      margin: 2px 16px;
+      width: calc(100% - 32px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .wfnode-output--test.header {
+      background-color: rgba(0, 191, 255, 0.05);
+      border-bottom: 1px solid deepskyblue;
+      font-weight: bold;
+    }
+
+    .wfnode-progress-bar {
+      margin: 16px 16px 0 16px;
+      width: calc(100% - 32px);
+    }
+
+    .wfnode-progress-bar.hidden {
+      opacity: 0;
+    }
+
+    .wfnode-testzone {
+      margin: 0 16px 16px 16px;
+      width: calc(100% - 32px);
+      height: 300px;
+      border: 1px solid gainsboro;
+      background-color: rgba(191, 191, 255, 0.05);
+      overflow-y: auto;
+
+      .wfnode-error {
+        color: red;
+      }
+    }
+  }
 }
 </style>

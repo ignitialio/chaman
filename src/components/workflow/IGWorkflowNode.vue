@@ -13,6 +13,7 @@
 
     <div class="wfnode-top" :draggable="false">
       <v-icon class="wfnode-icon" @click="handleSettings">settings</v-icon>
+      <v-icon class="wfnode-icon" @click="handleWidgetDisplay">widgets</v-icon>
       <ig-btn-confirm class="wfnode-icon delete"
         small flat icon="delete_forever" color="red"
         @mouseup.prevent.stop=""
@@ -46,71 +47,6 @@
         <div class="wfnode-labels right">{{ slot.name }}</div>
       </div>
     </div>
-
-    <!-- Node settings dialog -->
-    <ig-dialog v-model="settingsDialog">
-      <v-card class="wfnode-dialog-card">
-        <v-toolbar dark color="primary">
-          <v-btn icon dark @click.native="settingsDialog = false">
-            <v-icon>close</v-icon>
-          </v-btn>
-          <v-toolbar-title>{{ $t('Node settings') }} - {{ node.label }}</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-toolbar-items>
-          </v-toolbar-items>
-        </v-toolbar>
-
-        <v-card-text class="wfnode-dialog-content">
-          <ig-form v-if="node && blockSchema" class="wfnode-form"
-            :value="node" @input="handleNode"
-            :schema="blockSchema" :root="node"/>
-
-          <div v-if="node && node.service"
-            class="wfnode-section">{{ $t('Options') }}</div>
-
-          <component class="wfnode-form"
-            v-if="node && node.service && $services[node.service]"
-            :is="node.service" :node="node" :options="node.options"
-            @update:options="handleOptions"/>
-
-
-          <div v-if="node && node.service"
-            class="wfnode-section">{{ $t('Test') }}</div>
-
-          <div class="wfnode-output--test header">
-            <div style="width: 200px">{{ $t('Name') }}</div>
-            <div style="width: 200px">{{ $t('Type') }}</div>
-            <div style="width: 200px">{{ $t('Method') }}</div>
-            <div>{{ $t('Execute') }}</div>
-          </div>
-
-          <div class="wfnode-output--test" v-for="output in node.outputs">
-            <div style="width: 200px">{{ output.name }}</div>
-            <div style="width: 200px">{{ output.type }}</div>
-            <div style="width: 200px">{{ output.method }}</div>
-            <v-btn icon text small color="blue lighten-1"
-              @click="handleTestIO(output)">
-              <v-icon>play_arrow</v-icon>
-            </v-btn>
-          </div>
-
-          <div class="wfnode-output--test" v-for="input in node.inputs">
-            <div style="width: 200px">{{ input.name }}</div>
-            <div style="width: 200px">{{ input.type }}</div>
-            <div style="width: 200px">{{ input.method }}</div>
-            <v-btn icon text small color="blue lighten-1"
-              @click="handleTestIO(input)">
-              <v-icon>play_arrow</v-icon>
-            </v-btn>
-          </div>
-
-          <v-progress-linear :class="{ 'hidden': !testing }"
-            indeterminate class="wfnode-progress-bar"></v-progress-linear>
-
-          <ig-json-viewer class="wfnode-testzone" :data="testResult"/>
-        </v-card-text>
-      </v-card>
-    </ig-dialog>
   </div>
 </template>
 
@@ -131,11 +67,7 @@ export default {
   },
   data: () => {
     return {
-      node: null,
-      blockSchema: null,
-      settingsDialog: false,
-      testing: false,
-      testResult: null
+      node: null
     }
   },
   watch: {
@@ -150,39 +82,17 @@ export default {
     }
   },
   methods: {
-    handleTestIO(io) {
-      this.testResult = undefined
-      this.testing = true
-
-      switch (io.type) {
-        case 'rpc':
-          this.$services[this.node.service]
-            .callEventuallyBoundMethod(io.method).then(result => {
-              this.testResult = result
-              this.testing = false
-            }).catch(err => {
-              this.testResult = { err: '' + err }
-              this.testing = false
-            })
-          break
-      }
-    },
     // type = output | input
     getSlotElement(type, index) {
       if (this.$refs[type + '_' + index]) {
         return this.$refs[type + '_' + index][0]
       }
     },
+    handleWidgetDisplay() {
+      this.$emit('widget', this.node)
+    },
     handleSettings() {
-      this.settingsDialog = true
-    },
-    handleNode(val) {
-      this.node = val
-      this.$emit('update:data', this.node)
-    },
-    handleOptions(val) {
-      this.node.options = val
-      this.$emit('update:data', this.node)
+      this.$emit('settings', this.node)
     },
     handleDelete() {
       this.$emit('delete', this.node)
@@ -257,12 +167,6 @@ export default {
 
     this.$el.style.left = this.node.geometry.x + 'px'
     this.$el.style.top = this.node.geometry.y + 'px'
-
-    fetch('data/schemas/block.schema.json').then(function(response) {
-      return response.json()
-    }).then(data => {
-      this.blockSchema = data
-    }).catch(err => console.log(err))
 
     // preset associated service as per workflow node configuration
     this.$services.waitForService(this.node.service).then(nodeService => {
@@ -445,68 +349,6 @@ $slotNotConnectedColor: orange;
     position: absolute;
     top: 0;
     right: -$slotSize/2;
-  }
-
-  .wfnode-dialog-card {
-    width: 100%;
-    height: calc(100% - 0px);
-    border-radius: 0!important;
-
-    .wfnode-dialog-content {
-      height: calc(100vh - 64px);
-      width: 100%;
-      padding: 16px 15% 0 15%;
-      overflow-y: auto;
-      padding-bottom: 32px;
-    }
-
-    .wfnode-section {
-      width: 100%;
-      margin: 32px 0;
-      padding-left: 8px;
-      font-weight: bold;
-      border-bottom: 1px solid dodgerblue;
-    }
-
-    .wfnode-form {
-      height: auto!important;
-    }
-
-    .wfnode-output--test {
-      margin: 2px 16px;
-      width: calc(100% - 32px);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .wfnode-output--test.header {
-      background-color: rgba(0, 191, 255, 0.05);
-      border-bottom: 1px solid deepskyblue;
-      font-weight: bold;
-    }
-
-    .wfnode-progress-bar {
-      margin: 16px 16px 0 16px;
-      width: calc(100% - 32px);
-    }
-
-    .wfnode-progress-bar.hidden {
-      opacity: 0;
-    }
-
-    .wfnode-testzone {
-      margin: 0 16px 16px 16px;
-      width: calc(100% - 32px);
-      height: 300px;
-      border: 1px solid gainsboro;
-      background-color: rgba(191, 191, 255, 0.05);
-      overflow-y: auto;
-
-      .wfnode-error {
-        color: red;
-      }
-    }
   }
 }
 

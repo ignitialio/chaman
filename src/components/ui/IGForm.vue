@@ -180,20 +180,9 @@
     </div>
 
     <!-- Selection dialog -->
-    <ig-dialog v-model="selectionDialog" fullscreen>
-      <v-toolbar dark color="primary" flat style="border-radius: 0">
-        <v-btn icon dark @click="selectionDialog = false">
-          <v-icon>close</v-icon>
-        </v-btn>
-
-        <v-toolbar-title>{{ $t('Select item') + ' [' + $t(schema.title) + ']' }}</v-toolbar-title>
-
-        <v-spacer></v-spacer>
-        <v-toolbar-items>
-        </v-toolbar-items>
-      </v-toolbar>
-
-      <component style="height: calc(100% - 64px)" v-if="schema._meta && schema._meta.selection"
+    <ig-dialog v-model="selectionDialog" :zIndex="200"
+      :title="$t('Select item') + ' [' + $t(schema.title) + ']'">
+      <component v-if="schema._meta && schema._meta.selection"
         :is="schema._meta.selection.provider"></component>
     </ig-dialog>
   </div>

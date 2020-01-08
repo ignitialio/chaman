@@ -354,4 +354,10 @@ data:
   "Node settings":
     - "Paramètres du nœud"
     - "Configuraciones de nodo"
+  "Worfklow is not active":
+    - "Le diagramme n'est pas actif"
+    - "El diagrama no está activo"
+  "Workflow load":
+    - "Charger un diagramme"
+    - "Carger el diagrama"
 _unified: true

@@ -1,7 +1,20 @@
 <template>
   <div class="workflow-layout"
     @mousewheel="handleMouseWheel">
-    <ig-workflow-board ref="board" :data.sync="workflow"/>
+    <ig-workflow-board ref="board" :data.sync="workflow"
+      @widget="handleWidget"/>
+
+    <div v-if="widget" class="workflow-widget">
+      <div class="workflow-widget-dialog elevation-2">
+        <v-icon class="workflow-widget-dialog--close" color="red"
+          @click="widget = null">clear</v-icon>
+
+        <component v-if="running"
+          :is="widget.service" :node="widget"/>
+
+        <div v-if="!running">{{ $t('Worfklow is not active') }}</div>
+      </div>
+    </div>
 
     <v-speed-dial v-model="workflowMenu" class="workflow-sd" absolute
       direction="top">
@@ -52,37 +65,22 @@
     </div>
 
     <!-- Load workflows dialog -->
-    <ig-dialog v-model="loadWorkflowDialog">
-      <v-card class="workflow-dialog-card">
-        <v-toolbar dark color="primary">
-          <v-btn icon dark @click.native="loadWorkflowDialog = false">
-            <v-icon>close</v-icon>
-          </v-btn>
-          <v-toolbar-title>{{ $t('Workflow load') }}</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-toolbar-items>
-          </v-toolbar-items>
-        </v-toolbar>
+    <ig-dialog v-model="loadWorkflowDialog" :title="$t('Workflow load')">
+      <v-list class="workflow-list">
+        <v-list-item v-for="(workflow, index) in workflows" :key="index"
+          @click="handleLoadWorkflow(workflow)">
 
-        <v-card-text class="workflow-thumbnails">
+          <v-list-item-content>
+            <v-list-item-title v-text="workflow.name"></v-list-item-title>
+          </v-list-item-content>
 
-          <v-list class="workflow-list">
-            <v-list-item v-for="(workflow, index) in workflows" :key="index"
-              @click="handleLoadWorkflow(workflow)">
-
-              <v-list-item-content>
-                <v-list-item-title v-text="workflow.name"></v-list-item-title>
-              </v-list-item-content>
-
-              <v-list-item-action>
-                <ig-btn-confirm class="ig-error"
-                  small text icon="clear" color="red"
-                  @click="handleDeleteWorkflow(workflow)"></ig-btn-confirm>
-              </v-list-item-action>
-            </v-list-item>
-          </v-list>
-        </v-card-text>
-      </v-card>
+          <v-list-item-action>
+            <ig-btn-confirm class="ig-error"
+              small text icon="clear" color="red"
+              @click="handleDeleteWorkflow(workflow)"></ig-btn-confirm>
+          </v-list-item-action>
+        </v-list-item>
+      </v-list>
     </ig-dialog>
   </div>
 </template>
@@ -111,7 +109,8 @@ export default {
       },
       workflows: [],
       loadWorkflowDialog: false,
-      running: false
+      running: false,
+      widget: null
     }
   },
   watch: {
@@ -127,6 +126,9 @@ export default {
     'ig-workflow-palette': IGWorkflowPalette
   },
   methods: {
+    handleWidget(node) {
+      this.widget = node
+    },
     handleRun() {
       this.running = !this.running
       this.$emit('run', this.running, this.workflow)
@@ -279,5 +281,37 @@ export default {
   width: 100%;
   height: calc(100% - 0px);
   border-radius: 0!important;
+}
+
+.workflow-widget {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.workflow-widget-dialog {
+  width: 60%;
+  height: 50%;
+  position: relative;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid gainsboro;
+  border-radius: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 32px 8px 8px 8px;
+}
+
+.workflow-widget-dialog--close {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  opacity: 0.5;
+}
+
+.workflow-widget-dialog--close:hover {
+  opacity: 1;
 }
 </style>

@@ -61,23 +61,23 @@ export default {
                 if (status) {
                   if (binding) {
                     console.log(node.service, this.$services[node.service], output.method, binding)
-                    this.$services[binding.service]
-                      .bindMethods(binding.method,
-                        node.service, output.method).catch(err => {
-                          console.log('bind error', node.service, $j(output), err)
-                        })
+                    this.$services[binding.service].bindMethods(binding.method,
+                      node.service, output.method).catch(err => {
+                        console.log('bind error', node.service, $j(output), err)
+                      })
                   }
                 } else {
                   if (binding) {
+                    console.log(node.service, this.$services[node.service], output.method, binding)
                     this.$services[binding.service]
-                      .unbindMethods(binding.method,
-                        node.service, output.method).catch(err => {
-                          console.log('unbind error', node.service, $j(output), err)
-                        })
+                      .unbindMethods(binding.method).catch(err => {
+                        console.log('unbind error', node.service, $j(output), err)
+                      })
                   }
                 }
               }
               break
+            default:
           }
         }
       }
