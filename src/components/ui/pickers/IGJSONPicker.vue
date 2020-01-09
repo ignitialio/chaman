@@ -25,10 +25,10 @@
           class="jsonpicker-property-content"> {{child.value }}</div>
       </div>
 
-      <json-picker :path="nextPath(child)" :parentIsArray="child._isArray"
+      <ig-json-picker :path="nextPath(child)" :parentIsArray="child._isArray"
         v-if="child._childrenVisible || !child._children"
         @pathSelection="handlePathSelection" :showValue="showValue"
-        :dataAsTree="child"></json-picker>
+        :dataAsTree="child"></ig-json-picker>
     </div>
   </div>
 </template>
@@ -40,9 +40,13 @@ export default {
   props: {
     data: Object,
     dataAsTree: Object,
-    showValue: Boolean,
+    showValue: {
+      type: Boolean,
+      default: true
+    },
     path: String,
-    parentIsArray: Boolean
+    parentIsArray: Boolean,
+    inputData: Object
   },
   watch: {
     data: function(val) {
@@ -137,8 +141,23 @@ export default {
     if (this.data) {
       this.tree = this.buildTree('root', this.data)
       // console.log(JSON.stringify(this.tree, null, 2))
-    } else {
+    } else if (this.dataAsTree) {
       this.tree = this.dataAsTree
+    } else if (this.inputData) {
+      if (this.inputData.event) {
+        let token = this.$utils.uuid()
+        let responseEventName = this.inputData.event + ':' + token
+
+        this.$services.once(responseEventName, data => {
+          this.tree = this.buildTree('root', data)
+        })
+
+        this.$services.emit(this.inputData.event, token)
+      } else {
+        console.error('missing data')
+      }
+    } else {
+      console.error('missing data')
     }
   },
   beforeDestroy() {
@@ -178,6 +197,6 @@ export default {
   margin: 0 8px;
   font-size: 0.8em;
   font-family: monospace;
-  color: gainsboro;
+  color: dimgray;
 }
 </style>

@@ -211,7 +211,7 @@ export default {
     },
     handleNodeUpdate(index, val) {
       this.nodes[index] = val
-      // console.log($j(this.nodes[index]))
+
       this.$emit('update:data', {
         ...this.data,
         ...{
@@ -499,16 +499,31 @@ export default {
     },
     handleSelectNodeUpdate(val) {
       this.selectedNode = val
-      let idx = find(this.nodes, e => e.id === this.selectedNode.id)
+      let idx = findIndex(this.nodes, e => e.id === this.selectedNode.id)
       this.handleNodeUpdate(idx, this.selectedNode)
     },
     handleOptions(val) {
       this.selectedNode.options = val
-      let idx = find(this.nodes, e => e.id === this.selectedNode.id)
+      let idx = findIndex(this.nodes, e => e.id === this.selectedNode.id)
       this.handleNodeUpdate(idx, this.selectedNode)
     },
     handleSettings(node) {
       this.selectedNode = node
+    },
+    handleInputDataRequest(token) {
+      for (let input of this.selectedNode.inputs) {
+        switch (input.type) {
+          case 'rpc':
+            this.$services[this.selectedNode.service]
+              .callEventuallyBoundMethod(input.method).then(result => {
+                console.log('send data', result, input.method, input.name)
+                this.$services.emit('json-picker:data:' + token, result)
+              }).catch(err => {
+                console.log(err)
+              })
+            break
+        }
+      }
     }
   },
   mounted() {
@@ -535,15 +550,21 @@ export default {
     this.$refs.grid.innerHTML = grid
 
     this._listeners = {
-      onCtrl: this.handleCtrlKey.bind(this)
+      onCtrl: this.handleCtrlKey.bind(this),
+      onInputDataRequest: this.handleInputDataRequest.bind(this)
     }
 
     document.addEventListener('keydown', this._listeners.onCtrl)
     document.addEventListener('keyup', this._listeners.onCtrl)
+
+    // manage data path selection with json-picker
+    this.$services.on('json-picker:data', this._listeners.onInputDataRequest)
   },
   beforeDestroy() {
     document.removeEventListener('keydown', this._listeners.onCtrl)
     document.removeEventListener('keyup', this._listeners.onCtrl)
+
+    this.$services.off('json-picker:data', this._listeners.onInputDataRequest)
   }
 }
 </script>

@@ -181,9 +181,10 @@
 
     <!-- Selection dialog -->
     <ig-dialog v-model="selectionDialog" :zIndex="200"
-      :title="$t('Select item') + ' [' + $t(schema.title) + ']'">
+      :title="$t('Select item') + ' [ ' + $t(schema.title) + ' ]'">
       <component v-if="schema._meta && schema._meta.selection"
-        :is="schema._meta.selection.provider"></component>
+        :is="schema._meta.selection.provider"
+        :inputData="schema._meta.selection.inputData"></component>
     </ig-dialog>
   </div>
 </template>

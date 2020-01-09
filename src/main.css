@@ -13,10 +13,8 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  /* background-color: rgba(208, 188, 38, 0.3);
-  border: 1px solid rgba(208, 188, 38, 0.5); */
   background-color: rgba(8, 18, 38, 0.3);
-  border: 1px solid rgba(8, 18, 38, 0.2);
+  border: 1px solid rgba(8, 18, 38, 0.1);
   border-radius: 4px;
 }
 
