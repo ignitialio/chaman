@@ -169,7 +169,7 @@ export default {
 <style>
 .jsonpicker-layout {
   width: 100%;
-  height: calc(100% - 0);
+  height: calc(100% - 0px);
   overflow-y: auto;
 }
 
