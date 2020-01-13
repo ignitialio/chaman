@@ -116,7 +116,7 @@ export default {
   watch: {
     workflow: {
       handler: function(val) {
-        // console.log($j(val))
+        // console.log($j(val.nodes))
       },
       deep: true
     }

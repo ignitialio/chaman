@@ -29,10 +29,9 @@
       :data="node" @update:data="handleNodeUpdate(index, $event)" :scale="scale"/>
 
     <!-- Node settings dialog -->
-    <ig-dialog v-if="selectedNode"
-      v-model="selectedNode" class="workflow-node-dialog"
-      :title="$t('Node settings') + ' - ' + selectedNode.label">
-      <div class="workflow-node-dialog-content">
+    <ig-dialog v-model="settingsDialog" class="workflow-node-dialog"
+      :title="$t('Node settings') + ' - ' + (selectedNode ? selectedNode.label : '')">
+      <div v-if="selectedNode" class="workflow-node-dialog-content">
         <ig-form v-if="selectedNode && blockSchema" class="wfnode-form"
           :value="selectedNode" @input="handleSelectNodeUpdate"
           :schema="blockSchema" :root="selectedNode"/>
@@ -119,7 +118,8 @@ export default {
       selectedNode: null,
       blockSchema: null,
       testing: false,
-      testResult: null
+      testResult: null,
+      settingsDialog: false
     }
   },
   watch: {
@@ -211,13 +211,17 @@ export default {
     },
     handleNodeUpdate(index, val) {
       this.nodes[index] = val
-
-      this.$emit('update:data', {
+      let workflow = {
         ...this.data,
         ...{
           nodes: this.nodes
         }
-      })
+      }
+
+      this.$emit('update:data', workflow)
+
+      console.log(workflow.nodes[2].label, this.nodes[2].label)
+      this.$forceUpdate()
     },
     async handleNodeDrop(event) {
       if (event.dataTransfer.getData('text/plain')) {
@@ -498,17 +502,19 @@ export default {
       }
     },
     handleSelectNodeUpdate(val) {
-      this.selectedNode = val
       let idx = findIndex(this.nodes, e => e.id === this.selectedNode.id)
-      this.handleNodeUpdate(idx, this.selectedNode)
+      this.handleNodeUpdate(idx, val)
+      this.selectedNode = this.nodes[idx]
     },
     handleOptions(val) {
-      this.selectedNode.options = val
       let idx = findIndex(this.nodes, e => e.id === this.selectedNode.id)
+      this.nodes[idx].options = val
       this.handleNodeUpdate(idx, this.selectedNode)
+      this.selectedNode = this.nodes[idx]
     },
     handleSettings(node) {
       this.selectedNode = node
+      this.settingsDialog = true
     },
     handleInputDataRequest(token) {
       for (let input of this.selectedNode.inputs) {

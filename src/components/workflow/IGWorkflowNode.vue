@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import _ from 'lodash'
+import cloneDeep from 'lodash/cloneDeep'
 
 export default {
   name: 'ig-worflow-node',
@@ -71,6 +71,12 @@ export default {
     }
   },
   watch: {
+    data: {
+      handler: function(val) {
+        this.node = cloneDeep(this.data)
+      },
+      deep: true
+    },
     node: {
       handler: function(val) {
         if (this.$el.style) {
@@ -106,7 +112,7 @@ export default {
       img.style.opacity = 0
       event.dataTransfer.setDragImage(img, 0, 0)
 
-      let obj = _.cloneDeep(this.node)
+      let obj = cloneDeep(this.node)
       let bb = event.srcElement.getBoundingClientRect()
       obj._dx = mx - bb.x / this.scale
       obj._dy = my - bb.y / this.scale
@@ -162,7 +168,7 @@ export default {
     }
   },
   async mounted() {
-    this.node = _.cloneDeep(this.data)
+    this.node = cloneDeep(this.data)
     await this.$utils.waitForDOMReady(this.$el)
 
     this.$el.style.left = this.node.geometry.x + 'px'

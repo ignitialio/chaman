@@ -28,7 +28,7 @@
 export default {
   name: 'ig-dialog',
   props: {
-    value: {},
+    value: Boolean,
     title: {
       type: String
     },
@@ -39,7 +39,7 @@ export default {
   },
   methods: {
     handleClose() {
-      this.$emit('input', null)
+      this.$emit('input', false)
     }
   }
 }
