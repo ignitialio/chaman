@@ -125,6 +125,9 @@ export default {
   watch: {
     'data.scale': function(val) {
       this.scale = val
+    },
+    settingsDialog: function(val) {
+      this.testResult = null
     }
   },
   methods: {
@@ -219,8 +222,6 @@ export default {
       }
 
       this.$emit('update:data', workflow)
-
-      console.log(workflow.nodes[2].label, this.nodes[2].label)
       this.$forceUpdate()
     },
     async handleNodeDrop(event) {
@@ -248,6 +249,7 @@ export default {
           try {
             await this.$services[node.service].addInstance(helpers.id)
             node.instance = helpers.id
+            node.options = await this.$services[node.service].getDefaultSettings()
           } catch (err) {
             // silently fails: no multinstance
             console.log(err, 'no multiinstance for service [%s]', val)
@@ -385,8 +387,12 @@ export default {
       let initHeight = this.tempConnector.geometry.y2
 
       this.handleOnConnectorMouseMove = event => {
-        this.tempConnector.geometry.x2 = initWidth + (event.x - initPosX)
-        this.tempConnector.geometry.y2 = initHeight + (event.y - 48 - initPosY)
+        if (this.tempConnector) {
+          this.tempConnector.geometry.x2 = initWidth + (event.x - initPosX)
+          this.tempConnector.geometry.y2 = initHeight + (event.y - 48 - initPosY)
+        } else {
+          this.$el.removeEventListener('mousemove', this.handleOnConnectorMouseMove)
+        }
       }
 
       this.$el.addEventListener('mousemove', this.handleOnConnectorMouseMove)
@@ -509,7 +515,7 @@ export default {
     handleOptions(val) {
       let idx = findIndex(this.nodes, e => e.id === this.selectedNode.id)
       this.nodes[idx].options = val
-      this.handleNodeUpdate(idx, this.selectedNode)
+      this.handleNodeUpdate(idx, this.nodes[idx])
       this.selectedNode = this.nodes[idx]
     },
     handleSettings(node) {
