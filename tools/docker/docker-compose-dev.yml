@@ -1,6 +1,31 @@
 version: '3.3'
 
 services:
+  chaman:
+    image: ignitial/chaman:${IIOS_APP_VERSION}
+    container_name: chaman
+    ports:
+      - 8080:8080
+    volumes:
+      - ${PWD}:/opt/chaman
+    environment:
+      - IIOS_SERVER_PORT=${IIOS_SERVER_PORT}
+      - IIOS_NAMESPACE=${IIOS_NAMESPACE}
+      - IIOS_REDIS_HOST=redis
+      - IIOS_S3_ENDPOINT=${IIOS_S3_ENDPOINT}
+      - IIOS_S3_PORT=${IIOS_S3_PORT}
+      - IIOS_S3_BUCKET=${IIOS_S3_BUCKET}
+      - IIOS_S3_SECURE=true
+      - IIOS_S3_ACCESS_KEY_ID=${IIOS_S3_ACCESS_KEY_ID}
+      - IIOS_S3_SECRET_ACCESS_KEY=${IIOS_S3_SECRET_ACCESS_KEY}
+      - IIOS_EMAILER_SMTP_USER=support@ignitial.fr
+      - IIOS_EMAILER_SMTP_HOST=mail.gandi.net
+      - IIOS_EMAILER_SMTP_PORT=587
+      - IIOS_EMAILER_SMTP_PASS=${IIOS_EMAILER_SMTP_PASS}
+    networks:
+      infra:
+    command: [ "npm", "run", "dev:run" ]
+
   dlake:
     image: ignitial/dlake:${IIOS_DLAKE_VERSION}
     container_name: dlake
@@ -14,7 +39,7 @@ services:
       - IIOS_DBNAME=${IIOS_DBNAME}
       - IIOS_POPULATE=true
       - IIOS_NAMESPACE=${IIOS_NAMESPACE}
-      - IIOS_SERVER_HOST=0.0.0.0
+      - IIOS_SERVER_HOST=dlake
       - IIOS_SERVER_PORT=20991
     networks:
       infra:
@@ -27,7 +52,7 @@ services:
     environment:
       - IIOS_REDIS_HOST=redis
       - IIOS_NAMESPACE=${IIOS_NAMESPACE}
-      - IIOS_SERVER_HOST=0.0.0.0
+      - IIOS_SERVER_HOST=auth
       - IIOS_SERVER_PORT=20199
     networks:
       infra:
@@ -42,7 +67,7 @@ services:
     environment:
       - IIOS_REDIS_HOST=redis
       - IIOS_NAMESPACE=${IIOS_NAMESPACE}
-      - IIOS_SERVER_HOST=0.0.0.0
+      - IIOS_SERVER_HOST=s3
       - IIOS_SERVER_PORT=21200
       - IIOS_S3_ENDPOINT=minio
       - IIOS_S3_PORT=9000
@@ -61,11 +86,11 @@ services:
     volumes:
       - /home/${USER}/Documents/Projects/iio/services/lambda:/opt/lambda
     environment:
-      - IIOS_SERVER_HOST_TEST=0.0.0.0
+      - IIOS_SERVER_HOST_TEST=lambda
       - IIOS_DOCKER_REGISTRY=localhost:5001
       - IIOS_REDIS_HOST=redis
       - IIOS_NAMESPACE=${IIOS_NAMESPACE}
-      - IIOS_SERVER_HOST=0.0.0.0
+      - IIOS_SERVER_HOST=lambda
       - IIOS_SERVER_PORT=21201
     networks:
       infra:
@@ -83,7 +108,7 @@ services:
       - IIOS_DOCKER_SOCKET_PATH=/var/run/docker.sock
       - IIOS_REDIS_HOST=redis
       - IIOS_NAMESPACE=${IIOS_NAMESPACE}
-      - IIOS_SERVER_HOST=0.0.0.0
+      - IIOS_SERVER_HOST=docker
       - IIOS_SERVER_PORT=21202
     networks:
       infra:
@@ -109,7 +134,7 @@ services:
     environment:
       - IIOS_REDIS_HOST=redis
       - IIOS_NAMESPACE=${IIOS_NAMESPACE}
-      - IIOS_SERVER_HOST=0.0.0.0
+      - IIOS_SERVER_HOST=influx
       - IIOS_SERVER_PORT=21203
     networks:
       infra:
@@ -124,7 +149,7 @@ services:
     environment:
       - IIOS_REDIS_HOST=redis
       - IIOS_NAMESPACE=${IIOS_NAMESPACE}
-      - IIOS_SERVER_HOST=0.0.0.0
+      - IIOS_SERVER_HOST=utils
       - IIOS_SERVER_PORT=21204
     networks:
       infra:
@@ -139,7 +164,7 @@ services:
     environment:
       - IIOS_REDIS_HOST=redis
       - IIOS_NAMESPACE=${IIOS_NAMESPACE}
-      - IIOS_SERVER_HOST=0.0.0.0
+      - IIOS_SERVER_HOST=http
       - IIOS_SERVER_PORT=21205
     networks:
       infra:
@@ -154,7 +179,7 @@ services:
     environment:
       - IIOS_REDIS_HOST=redis
       - IIOS_NAMESPACE=${IIOS_NAMESPACE}
-      - IIOS_SERVER_HOST=0.0.0.0
+      - IIOS_SERVER_HOST=charts
       - IIOS_SERVER_PORT=21206
     networks:
       infra:

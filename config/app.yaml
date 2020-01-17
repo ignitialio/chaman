@@ -4,7 +4,7 @@ defs:
     redis:
       encoder: bson
       # sentinels: sentinel
-      host: 127.0.0.1
+      host: redis
       port: 6379
       db: 0
 server:
@@ -25,7 +25,7 @@ store:
     # bucket: iio1393
     # region: fr-par
     # port:
-    endPoint: 127.0.0.1
+    endPoint: minio
     region: eu-west-3
     useSSL: false
     port: 9000
@@ -56,7 +56,7 @@ modules:
       logger: false
       debug: false
     mail:
-      from: Systra Support <no-reply@ignitial.fr>
+      from: Ignitial Support <no-reply@ignitial.fr>
 # data service information
 data:
   # name of the main service that provides data access

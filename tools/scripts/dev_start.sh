@@ -20,8 +20,8 @@ export IIOS_APP_VERSION=$(cat package.json \
   | sed 's/[",]//g' \
   | tr -d '[[:space:]]')
 
-export IIOS_AUTH_VERSION=1.1.0
-export IIOS_DLAKE_VERSION=3.3.3
+export IIOS_AUTH_VERSION=1.2.0
+export IIOS_DLAKE_VERSION=3.4.0
 
 echo "app version: ${IIOS_APP_VERSION}"
 echo "dlake version: ${IIOS_DLAKE_VERSION}"
@@ -33,16 +33,16 @@ export IIOS_NAMESPACE=chaman
 export IIOS_DBNAME=chaman
 export IIOS_SERVER_PATH="public"
 export IIOS_DROP_FILES_PATH="public/dropped"
-
-docker-compose -f ${PWD}/tools/docker/docker-compose-dev.yml up -d
-
 export IIOS_S3_SECURE=false
-export IIOS_S3_ENDPOINT=localhost
+export IIOS_S3_ENDPOINT=minio
 export IIOS_S3_PORT=9000
 export IIOS_S3_ACCESS_KEY_ID=G4I3RZP3I2AS7EMWQPMZ
 export IIOS_S3_SECRET_ACCESS_KEY=xMzrrXMtnFEOP/K7MDFRA/bPxRfiCYEXOTOTOYEK
 
 export IIOS_EMAILER_SMTP_PASS=toto
 
-sleep 3
-npm-run-all --parallel server:start client:serve
+docker-compose -f ${PWD}/tools/docker/docker-compose-dev.yml up -d
+
+sleep 10
+#npm-run-all --parallel server:start client:serve
+docker attach chaman

@@ -49,7 +49,7 @@ modules:
       logger: false
       debug: false
     mail:
-      from: Systra Support <no-reply@ignitial.fr>
+      from: Ignitial Support <no-reply@ignitial.fr>
 # data service information
 data:
   # name of the main service that provides data access

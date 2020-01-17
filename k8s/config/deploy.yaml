@@ -31,7 +31,7 @@ iios:
     replicas: 1
   services:
     dlake:
-      version: 3.3.2
+      version: 3.4.0
       replicas: 1
       ports:
         - containerPort: 20194
@@ -48,7 +48,7 @@ iios:
           name: dt5
       imagePullPolicy: IfNotPresent
     auth:
-      version: 1.1.0
+      version: 1.2.0
       replicas: 1
       ports:
         - containerPort: 20295
