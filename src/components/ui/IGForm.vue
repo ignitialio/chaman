@@ -67,10 +67,35 @@
             :value="fileProgress"></v-progress-linear>
         </div>
 
-        <v-date-picker
+        <v-menu ref="datePicker"
           v-else-if="schema._meta && schema._meta.type && schema._meta.type.match(/date|time/)"
-          :value="new Date(value).toISOString().slice(0, 10)" @input="handleInput"
-          :label="$t(schema.title || name)"></v-date-picker>
+          v-model="datepickerMenu"
+          :close-on-content-click="false"
+          :return-value="value"
+          transition="scale-transition"
+          offset-y
+          min-width="290px">
+
+          <template v-slot:activator="{ on }">
+            <v-text-field
+              :value="new Date(value).toLocaleDateString()"
+              :label="$t(schema.title || name)"
+              prepend-icon="event"
+              readonly
+              v-on="on"
+            ></v-text-field>
+          </template>
+
+          <v-date-picker :value="new Date(value).toISOString().slice(0, 10)" no-title scrollable
+            @input="handleInput">
+            <v-spacer></v-spacer>
+            <v-btn text color="primary" @click="datepickerMenu = false">
+              {{ $t('Cancel') }}</v-btn>
+            <v-btn text color="primary"
+              @click="$refs.datePicker.save(new Date(value).toISOString().slice(0, 10))">
+              {{ $t('Accept') }}</v-btn>
+          </v-date-picker>
+        </v-menu>
 
         <!-- Source code -->
         <div class="igform-editor"
@@ -124,7 +149,7 @@
       schema.type !== 'array' && schema._meta.type !== 'geopoint' && schema.properties[prop]"
       class="ig-form-next"
       v-for="(prop, index) in properties" :key="index">
-      <div v-if="!isObjectId(value[prop]) && !isPrimitive(value[prop]) && showIf(schema.properties[prop]._meta.showIf)"
+      <div v-if="(value[prop] !== null && !isObjectId(value[prop])) && !isPrimitive(value[prop]) && showIf(schema.properties[prop]._meta.showIf)"
         class="ig-form-next-header">
         <div class="ig-form-next-header--text">
           {{ schema.properties[prop] ? $t(schema.properties[prop].title) : $t(prop) }}</div>
@@ -259,7 +284,9 @@ export default {
       /* populate selection list with helpers */
       listFromFunctionItems: [],
       /* bug on boolean value */
-      booleanValue: false
+      booleanValue: false,
+      /* data picker menu */
+      datepickerMenu: false
     }
   },
   methods: {

@@ -573,6 +573,16 @@ export default {
     // app sign out event
     this.$services.on('app:signout', () => {
       this.$ws.resetLocalCredentials()
+
+      for (let menu of this.$store.state.menuItems) {
+        if (menu.route && this.$router.currentRoute.path === menu.route.path) {
+          if (!menu.anonymousAccess) {
+            this.$router.push('/login')
+          }
+
+          break
+        }
+      }
     })
 
     // user notifications handle
@@ -613,7 +623,7 @@ export default {
     if (this.$store.state.user) {
       this.$db.collection('users').then(users => {
         this.$utils.waitForProperty(this.$store.state, 'user').then(async () => {
-          let nu = await users.dGet({ 'login.username': this.$store.state.user.username })
+          let nu = await users.dGet({ 'login.username': this.$store.state.user.login.username })
           this.$store.commit('user', nu)
           // BUG: persisted state b*ing -> no more persisted state: to be tested
           /* setTimeout(() => {

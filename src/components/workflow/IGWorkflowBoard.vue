@@ -46,7 +46,6 @@
           :options="selectedNode.options"
           @update:options="handleOptions"/>
 
-
         <div v-if="selectedNode && selectedNode.service"
           class="wfnode-section">{{ $t('Test') }}</div>
 
@@ -57,7 +56,8 @@
           <div>{{ $t('Execute') }}</div>
         </div>
 
-        <div class="wfnode-output--test" v-for="output in selectedNode.outputs">
+        <div class="wfnode-output--test"
+          v-for="(output, index) in selectedNode.outputs" :key="index">
           <div style="width: 200px">{{ output.name }}</div>
           <div style="width: 200px">{{ output.type }}</div>
           <div style="width: 200px">{{ output.method }}</div>
@@ -67,7 +67,8 @@
           </v-btn>
         </div>
 
-        <div class="wfnode-output--test" v-for="input in selectedNode.inputs">
+        <div class="wfnode-output--test"
+          v-for="(input, index) in selectedNode.inputs" :key="index">
           <div style="width: 200px">{{ input.name }}</div>
           <div style="width: 200px">{{ input.type }}</div>
           <div style="width: 200px">{{ input.method }}</div>
@@ -169,11 +170,15 @@ export default {
       this.nodes = data.nodes
 
       for (let n of this.nodes) {
-        this.$services[n.service].addInstance(n.instance)/*.then(() => {
-          console.log('instance created for node [%s].[%s]', n.label, n.id)
-        })*/.catch(err => {
+        this.$services[n.service].addInstance(n.instance).catch(err => {
           console.log(err)
         })
+
+        /*
+        .then(() => {
+          console.log('instance created for node [%s].[%s]', n.label, n.id)
+        })
+        */
 
         if (!n.outputs) continue
         for (let o = 0; o < n.outputs.length; o++) {
@@ -243,7 +248,7 @@ export default {
             }
           }
 
-          node = { ...node, ...helpers}
+          node = { ...node, ...helpers }
           // copy schema for UI generation and generate empty data
 
           try {
@@ -252,7 +257,7 @@ export default {
             node.options = await this.$services[node.service].getDefaultSettings()
           } catch (err) {
             // silently fails: no multinstance
-            console.log(err, 'no multiinstance for service [%s]', val)
+            console.log(err, 'no multiinstance for service [%s]', node.service)
           }
 
           // console.log($j(node))
@@ -314,14 +319,14 @@ export default {
       })
     },
     handleConnectorUpdate(nodePosition, connector, type) {
-      let node
+      /* let node
 
       for (let n of this.nodes) {
         if (n.id === connector[type].id) {
           node = n
           break
         }
-      }
+      } */
 
       let nodeEl = this.$refs[connector[type].id][0]
       let slotEl = nodeEl.getSlotElement(type === 'origin' ? 'output' : 'input',
@@ -357,7 +362,7 @@ export default {
         await this.$services[node.service].removeInstance(node.instance)
       } catch (err) {
         // silently fails: no multinstance
-        console.log(err, 'no multiinstance for service [%s]', val)
+        console.log(err, 'no multiinstance for service [%s]', node.service)
       }
 
       console.log('deleted', node.id, $j(this.connectors))
@@ -501,7 +506,7 @@ export default {
               this.testResult = result
               this.testing = false
             }).catch(err => {
-              this.testResult = { err: '' + err }
+              this.testResult = { err: '' + err }
               this.testing = false
             })
           break

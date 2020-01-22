@@ -360,4 +360,10 @@ data:
   "Workflow load":
     - "Charger un diagramme"
     - "Carger el diagrama"
+  "Connection":
+    - "Connexion"
+    - "Conexión"
+  "Save":
+    - "Sauvegarder"
+    - "Guardar"
 _unified: true
