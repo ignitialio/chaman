@@ -66,6 +66,9 @@ data:
   "Password":
     - "Mot de passe"
     - "Contraseña"
+  "Password check":
+    - "Vérification du mot de passe"
+    - "Verificación de la contraseña"
   "Get notifications by email":
     - "Recevoir les notifications par courriel"
     - "Recibir las notificaciones por correo"
